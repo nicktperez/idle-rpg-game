@@ -327,29 +327,29 @@ class GameState {
     setupBattleEventListeners() {
         console.log('Setting up battle event listeners...');
         
-        // Add click listener to arena floor
-        const arenaFloor = document.getElementById('arena-floor');
-        if (arenaFloor && !arenaFloor.hasAttribute('data-listeners-setup')) {
-            arenaFloor.addEventListener('click', (e) => {
+        // Add click listener to attack button
+        const attackButton = document.getElementById('attack-button');
+        if (attackButton && !attackButton.hasAttribute('data-listeners-setup')) {
+            attackButton.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('Arena floor clicked - attacking!');
+                console.log('Attack button clicked - attacking!');
                 this.attack();
             });
-            arenaFloor.setAttribute('data-listeners-setup', 'true');
-            console.log('Arena floor event listener set up');
+            attackButton.setAttribute('data-listeners-setup', 'true');
+            console.log('Attack button event listener set up');
         }
         
         // Add global click listener as fallback - listen for clicks on battle arena elements
-        const battleSection = document.querySelector('.location-content[data-location="battle"]');
+        const battleSection = document.getElementById('battle-area');
         if (battleSection && !battleSection.hasAttribute('data-global-listeners-setup')) {
             battleSection.addEventListener('click', (e) => {
                 console.log('Global battle click detected on:', e.target);
                 
-                // Check if clicking on monster sprite, arena floor, or combat area
+                // Check if clicking on monster sprite, hero sprite, or attack button
                 if (e.target.closest('#monster-sprite') || 
                     e.target.closest('.monster-sprite') || 
-                    e.target.id === 'arena-floor' ||
-                    e.target.closest('.dungeon-background')) {
+                    e.target.closest('#player-sprite') ||
+                    e.target.id === 'attack-button') {
                     e.preventDefault();
                     console.log('Battle area clicked - attacking!');
                     this.attack();
@@ -359,20 +359,6 @@ class GameState {
             console.log('Global battle event listener set up');
         }
         
-        // Add click listener to the entire dungeon background
-        const dungeonBackground = document.querySelector('.dungeon-background');
-        if (dungeonBackground && !dungeonBackground.hasAttribute('data-listeners-setup')) {
-            dungeonBackground.addEventListener('click', (e) => {
-                // Only trigger if clicking on the arena floor or monster sprite
-                if (e.target.id === 'arena-floor' || e.target.closest('.monster-sprite') || e.target.closest('#monster-sprite')) {
-                    e.preventDefault();
-                    console.log('Combat area clicked - attacking!');
-                    this.attack();
-                }
-            });
-            dungeonBackground.setAttribute('data-listeners-setup', 'true');
-            console.log('Dungeon background event listener set up');
-        }
         
         // Also add direct click listener to monster sprite container
         const monsterSprite = document.getElementById('monster-sprite');

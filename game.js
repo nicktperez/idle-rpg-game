@@ -315,7 +315,9 @@ class GameState {
     
     setupLocationEventListeners(locationId) {
         // Set up event listeners for specific locations
+        console.log('Setting up event listeners for location:', locationId);
         if (locationId === 'battle') {
+            console.log('Setting up battle event listeners...');
             this.setupBattleEventListeners();
         } else if (locationId === 'shop') {
             this.setupShopEventListeners();
@@ -335,6 +337,26 @@ class GameState {
             });
             arenaFloor.setAttribute('data-listeners-setup', 'true');
             console.log('Arena floor event listener set up');
+        }
+        
+        // Add global click listener as fallback - listen for clicks on battle arena elements
+        const battleSection = document.querySelector('.location-content[data-location="battle"]');
+        if (battleSection && !battleSection.hasAttribute('data-global-listeners-setup')) {
+            battleSection.addEventListener('click', (e) => {
+                console.log('Global battle click detected on:', e.target);
+                
+                // Check if clicking on monster sprite, arena floor, or combat area
+                if (e.target.closest('#monster-sprite') || 
+                    e.target.closest('.monster-sprite') || 
+                    e.target.id === 'arena-floor' ||
+                    e.target.closest('.dungeon-background')) {
+                    e.preventDefault();
+                    console.log('Battle area clicked - attacking!');
+                    this.attack();
+                }
+            });
+            battleSection.setAttribute('data-global-listeners-setup', 'true');
+            console.log('Global battle event listener set up');
         }
         
         // Add click listener to the entire dungeon background
@@ -363,6 +385,18 @@ class GameState {
             });
             monsterSprite.setAttribute('data-listeners-setup', 'true');
             console.log('Monster sprite container event listener set up');
+        }
+        
+        // Add test button event listener
+        const testButton = document.getElementById('test-attack-btn');
+        if (testButton && !testButton.hasAttribute('data-listeners-setup')) {
+            testButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Test attack button clicked!');
+                this.attack();
+            });
+            testButton.setAttribute('data-listeners-setup', 'true');
+            console.log('Test attack button event listener set up');
         }
         
         console.log('All battle event listeners set up');
@@ -598,10 +632,15 @@ class GameState {
     
     attack() {
         console.log('Attack function called');
+        console.log('Current monster:', this.currentMonster);
+        
         if (!this.currentMonster || this.currentMonster.hp <= 0) {
-            console.log('No valid monster to attack');
+            console.log('No valid monster to attack, spawning new monster...');
+            this.spawnMonster();
             return;
         }
+        
+        console.log('Attacking monster:', this.currentMonster.name, 'HP:', this.currentMonster.hp);
         
         // Add visual combat effects
         this.showCombatEffects();

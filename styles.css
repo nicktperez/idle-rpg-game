@@ -137,37 +137,61 @@ body::before {
     display: block;
 }
 
-.map-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+.world-map-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
     margin-bottom: 30px;
-    padding: 20px;
-    background: 
-        linear-gradient(135deg, rgba(139, 69, 19, 0.7), rgba(101, 67, 33, 0.7)),
-        radial-gradient(circle at center, rgba(160, 82, 45, 0.3), transparent);
     border-radius: 15px;
+    overflow: hidden;
     border: 3px solid #8b4513;
     box-shadow: 
         inset 0 0 20px rgba(0, 0, 0, 0.4),
         0 0 20px rgba(212, 175, 55, 0.2);
 }
 
+.map-background {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(135deg, rgba(139, 69, 19, 0.7), rgba(101, 67, 33, 0.7)),
+        radial-gradient(circle at center, rgba(160, 82, 45, 0.3), transparent);
+}
+
+.world-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
 .map-location {
-    background: linear-gradient(135deg, rgba(139, 69, 19, 0.8), rgba(101, 67, 33, 0.8));
-    border: 2px solid #8b4513;
-    border-radius: 15px;
-    padding: 20px;
+    position: absolute;
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.9), rgba(101, 67, 33, 0.9));
+    border: 3px solid #d4af37;
+    border-radius: 20px;
+    padding: 15px;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.4),
+        0 0 15px rgba(212, 175, 55, 0.6);
+    z-index: 10;
+    min-width: 120px;
+    max-width: 150px;
 }
 
 .map-location:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(135deg, rgba(160, 82, 45, 0.9), rgba(139, 69, 19, 0.9));
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 
+        0 15px 30px rgba(212, 175, 55, 0.8),
+        inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(135deg, rgba(160, 82, 45, 0.95), rgba(139, 69, 19, 0.95));
+    border-color: #ffd700;
 }
 
 .location-icon {

@@ -1673,15 +1673,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 60000);
     
-    // World Map Navigation
-    document.querySelectorAll('.map-location').forEach(location => {
-        console.log('Setting up event listener for:', location.dataset.location);
-        location.addEventListener('click', () => {
-            console.log('Location clicked:', location.dataset.location);
-            const locationId = location.dataset.location;
-            game.navigateToLocation(locationId);
+    // World Map Navigation - Set up event listeners
+    function setupMapEventListeners() {
+        console.log('Setting up map event listeners...');
+        const locations = document.querySelectorAll('.map-location');
+        console.log('Found', locations.length, 'map locations');
+        
+        locations.forEach(location => {
+            console.log('Setting up event listener for:', location.dataset.location);
+            location.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Location clicked:', location.dataset.location);
+                const locationId = location.dataset.location;
+                if (game && game.navigateToLocation) {
+                    game.navigateToLocation(locationId);
+                } else {
+                    console.error('Game or navigateToLocation method not found');
+                }
+            });
         });
-    });
+    }
+    
+    // Call the function to set up event listeners
+    setupMapEventListeners();
     
     // Back to map navigation
     document.querySelectorAll('.nav-btn').forEach(btn => {

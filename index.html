@@ -10,6 +10,56 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Tutorial Overlay -->
+    <div id="tutorial-overlay" class="tutorial-overlay">
+        <div class="tutorial-modal">
+            <div class="tutorial-header">
+                <h2 id="tutorial-title">Welcome to Idle RPG Adventure!</h2>
+                <button id="tutorial-close" class="tutorial-close">×</button>
+            </div>
+            <div class="tutorial-content">
+                <div id="tutorial-text">Let's learn how to play this awesome idle RPG game!</div>
+                <div class="tutorial-progress">
+                    <div class="progress-bar">
+                        <div id="tutorial-progress-fill" class="progress-fill"></div>
+                    </div>
+                    <span id="tutorial-step">Step 1 of 8</span>
+                </div>
+            </div>
+            <div class="tutorial-controls">
+                <button id="tutorial-prev" class="tutorial-btn" disabled>Previous</button>
+                <button id="tutorial-next" class="tutorial-btn">Next</button>
+                <button id="tutorial-skip" class="tutorial-btn tutorial-skip">Skip Tutorial</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Panel -->
+    <div id="help-panel" class="help-panel">
+        <div class="help-content">
+            <h3>Quick Help</h3>
+            <div class="help-section">
+                <h4>🎮 How to Play:</h4>
+                <ul>
+                    <li><strong>Click monsters</strong> to attack them manually</li>
+                    <li><strong>Buy skills</strong> to unlock auto-attack and bonuses</li>
+                    <li><strong>Purchase equipment</strong> to increase your power</li>
+                    <li><strong>Complete achievements</strong> for permanent rewards</li>
+                </ul>
+            </div>
+            <div class="help-section">
+                <h4>💡 Pro Tips:</h4>
+                <ul>
+                    <li>Auto-attack is essential for idle progression</li>
+                    <li>Critical strike chance multiplies your damage</li>
+                    <li>Gold bonus affects all gold rewards</li>
+                    <li>Health regeneration keeps you fighting longer</li>
+                </ul>
+            </div>
+            <button id="help-close" class="help-close">Got it!</button>
+        </div>
+    </div>
+
     <div id="game-container">
         <!-- Header with player stats -->
         <header class="game-header">
@@ -69,6 +119,9 @@
                 <button class="tab-btn" data-tab="inventory">Inventory</button>
                 <button class="tab-btn" data-tab="shop">Shop</button>
                 <button class="tab-btn" data-tab="achievements">Achievements</button>
+                <button class="tab-btn" data-tab="prestige">Prestige</button>
+                <button class="tab-btn" data-tab="quests">Quests</button>
+                <button class="tab-btn" data-tab="stats">Stats</button>
             </nav>
 
             <!-- Tab content -->
@@ -146,6 +199,109 @@
                         <!-- Achievements will be populated here -->
                     </div>
                 </div>
+
+                <!-- Prestige tab -->
+                <div class="tab-panel" id="prestige-panel">
+                    <h2>Prestige System</h2>
+                    <div class="prestige-info">
+                        <div class="prestige-description">
+                            <p>Prestige allows you to reset your progress for permanent bonuses!</p>
+                            <div class="prestige-requirements">
+                                <h3>Requirements:</h3>
+                                <ul>
+                                    <li>Reach Level 50</li>
+                                    <li>Have 10,000 Gold</li>
+                                    <li>Unlock 3 Achievements</li>
+                                </ul>
+                            </div>
+                            <div class="prestige-benefits">
+                                <h3>Prestige Benefits:</h3>
+                                <ul>
+                                    <li>+50% Gold Gain (Permanent)</li>
+                                    <li>+25% Experience Gain (Permanent)</li>
+                                    <li>Unlock Prestige Skills</li>
+                                    <li>Access to Higher Tier Equipment</li>
+                                </ul>
+                            </div>
+                            <button id="prestige-btn" class="prestige-btn" disabled>Prestige Not Available</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quests tab -->
+                <div class="tab-panel" id="quests-panel">
+                    <h2>Daily Quests</h2>
+                    <div class="quest-timer">
+                        <h3>Next Quest Reset: <span id="quest-timer">23:45:12</span></h3>
+                    </div>
+                    <div class="quests-list" id="quests-list">
+                        <!-- Quests will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Stats tab -->
+                <div class="tab-panel" id="stats-panel">
+                    <h2>Game Statistics</h2>
+                    <div class="stats-grid">
+                        <div class="stat-category">
+                            <h3>Combat Stats</h3>
+                            <div class="stat-item">
+                                <span class="stat-label">Monsters Defeated:</span>
+                                <span id="stat-monsters-defeated">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Total Damage Dealt:</span>
+                                <span id="stat-damage-dealt">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Critical Hits:</span>
+                                <span id="stat-crit-hits">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Highest Damage:</span>
+                                <span id="stat-highest-damage">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-category">
+                            <h3>Economy Stats</h3>
+                            <div class="stat-item">
+                                <span class="stat-label">Total Gold Earned:</span>
+                                <span id="stat-gold-earned">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Gold Spent:</span>
+                                <span id="stat-gold-spent">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Items Purchased:</span>
+                                <span id="stat-items-purchased">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Skills Upgraded:</span>
+                                <span id="stat-skills-upgraded">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-category">
+                            <h3>Time Stats</h3>
+                            <div class="stat-item">
+                                <span class="stat-label">Time Played:</span>
+                                <span id="stat-time-played">0s</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Game Started:</span>
+                                <span id="stat-game-started">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Achievements Unlocked:</span>
+                                <span id="stat-achievements">0/12</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Current Prestige Level:</span>
+                                <span id="stat-prestige-level">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
 
@@ -155,11 +311,13 @@
         <!-- Particle effects -->
         <div id="particles"></div>
 
-        <!-- Save/Load buttons -->
+        <!-- Help and Save controls -->
         <div class="save-controls">
-            <button id="save-btn">Save Game</button>
-            <button id="load-btn">Load Game</button>
-            <button id="reset-btn">Reset Game</button>
+            <button id="help-btn" class="help-btn">❓ Help</button>
+            <button id="tutorial-btn" class="tutorial-btn">📚 Tutorial</button>
+            <button id="save-btn">💾 Save</button>
+            <button id="load-btn">📁 Load</button>
+            <button id="reset-btn">🔄 Reset</button>
         </div>
     </div>
 

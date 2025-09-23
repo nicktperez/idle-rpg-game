@@ -14,7 +14,80 @@ class GameState {
             autoAttack: false,
             critChance: 0.05,
             goldBonus: 1.0,
-            healthRegen: 0
+            healthRegen: 0,
+            prestigeLevel: 0,
+            prestigeGoldBonus: 0,
+            prestigeExpBonus: 0
+        };
+        
+        // Enhanced statistics tracking
+        this.stats = {
+            monstersDefeated: 0,
+            totalDamageDealt: 0,
+            criticalHits: 0,
+            highestDamage: 0,
+            totalGoldEarned: 0,
+            goldSpent: 0,
+            itemsPurchased: 0,
+            skillsUpgraded: 0,
+            timePlayed: 0,
+            gameStarted: new Date().toLocaleString()
+        };
+        
+        // Tutorial system
+        this.tutorial = {
+            currentStep: 0,
+            completed: false,
+            steps: [
+                {
+                    title: "Welcome to Idle RPG Adventure!",
+                    text: "This is your character! You'll fight monsters, level up, and become stronger. Let's start by clicking on the monster to attack it!",
+                    target: ".monster-sprite",
+                    action: "click"
+                },
+                {
+                    title: "Great! You attacked the monster!",
+                    text: "Notice how the monster's health decreased. Keep attacking until it's defeated to earn gold and experience!",
+                    target: ".monster-sprite",
+                    action: "wait"
+                },
+                {
+                    title: "Time to spend your gold!",
+                    text: "Click on the Skills tab to see your skill tree. These skills will make you much stronger!",
+                    target: "[data-tab='skills']",
+                    action: "click"
+                },
+                {
+                    title: "Buy your first skill!",
+                    text: "Click on 'Auto Attack' to purchase it. This will let you fight monsters automatically!",
+                    target: "[data-skill='auto-attack']",
+                    action: "click"
+                },
+                {
+                    title: "Check out the shop!",
+                    text: "Go to the Shop tab to buy better equipment. Better weapons and armor will make you much stronger!",
+                    target: "[data-tab='shop']",
+                    action: "click"
+                },
+                {
+                    title: "Buy some equipment!",
+                    text: "Click on any weapon or armor to purchase it. You'll see your stats increase immediately!",
+                    target: ".buy-btn",
+                    action: "click"
+                },
+                {
+                    title: "Check your achievements!",
+                    text: "Go to the Achievements tab to see your progress. Unlocking achievements gives you permanent bonuses!",
+                    target: "[data-tab='achievements']",
+                    action: "click"
+                },
+                {
+                    title: "You're ready to play!",
+                    text: "That's it! Now you know how to play. The game will continue running even when you're not actively playing. Have fun!",
+                    target: null,
+                    action: "complete"
+                }
+            ]
         };
         
         this.equipment = {
@@ -32,9 +105,11 @@ class GameState {
         
         this.inventory = [];
         this.achievements = this.initializeAchievements();
+        this.quests = this.initializeQuests();
         this.currentMonster = null;
         this.combatLog = [];
         this.gameStartTime = Date.now();
+        this.lastQuestReset = Date.now();
         
         // Combat system
         this.lastAutoAttack = 0;
@@ -53,12 +128,63 @@ class GameState {
     
     initializeAchievements() {
         return [
-            { id: 'first_kill', name: 'First Blood', description: 'Defeat your first monster', icon: '⚔️', unlocked: false, progress: 0, target: 1 },
-            { id: 'level_5', name: 'Rising Star', description: 'Reach level 5', icon: '⭐', unlocked: false, progress: 0, target: 5 },
-            { id: 'rich_1000', name: 'Wealthy Warrior', description: 'Accumulate 1000 gold', icon: '💰', unlocked: false, progress: 0, target: 1000 },
-            { id: 'skill_master', name: 'Skill Master', description: 'Max out a skill', icon: '🎯', unlocked: false, progress: 0, target: 1 },
-            { id: 'monster_slayer', name: 'Monster Slayer', description: 'Defeat 100 monsters', icon: '👹', unlocked: false, progress: 0, target: 100 },
-            { id: 'equipment_collector', name: 'Equipment Collector', description: 'Own 10 different items', icon: '⚔️', unlocked: false, progress: 0, target: 10 }
+            { id: 'first_kill', name: 'First Blood', description: 'Defeat your first monster', icon: '⚔️', unlocked: false, progress: 0, target: 1, reward: '+10 Gold' },
+            { id: 'level_5', name: 'Rising Star', description: 'Reach level 5', icon: '⭐', unlocked: false, progress: 0, target: 5, reward: '+1 Strength' },
+            { id: 'rich_1000', name: 'Wealthy Warrior', description: 'Accumulate 1000 gold', icon: '💰', unlocked: false, progress: 0, target: 1000, reward: '+5% Gold Gain' },
+            { id: 'skill_master', name: 'Skill Master', description: 'Max out a skill', icon: '🎯', unlocked: false, progress: 0, target: 1, reward: '+1 Skill Point' },
+            { id: 'monster_slayer', name: 'Monster Slayer', description: 'Defeat 100 monsters', icon: '👹', unlocked: false, progress: 0, target: 100, reward: '+2% Crit Chance' },
+            { id: 'equipment_collector', name: 'Equipment Collector', description: 'Own 10 different items', icon: '⚔️', unlocked: false, progress: 0, target: 10, reward: '+1 Defense' },
+            { id: 'level_25', name: 'Veteran Fighter', description: 'Reach level 25', icon: '🏆', unlocked: false, progress: 0, target: 25, reward: '+25 Max HP' },
+            { id: 'rich_10000', name: 'Gold Hoarder', description: 'Accumulate 10,000 gold', icon: '💎', unlocked: false, progress: 0, target: 10000, reward: '+10% Gold Gain' },
+            { id: 'crit_master', name: 'Critical Master', description: 'Deal 50 critical hits', icon: '💥', unlocked: false, progress: 0, target: 50, reward: '+5% Crit Damage' },
+            { id: 'prestige_master', name: 'Prestige Master', description: 'Complete your first prestige', icon: '👑', unlocked: false, progress: 0, target: 1, reward: '+50% All Bonuses' },
+            { id: 'quest_completer', name: 'Quest Master', description: 'Complete 20 daily quests', icon: '📋', unlocked: false, progress: 0, target: 20, reward: '+2 Quest Rewards' },
+            { id: 'time_played', name: 'Dedicated Player', description: 'Play for 1 hour total', icon: '⏰', unlocked: false, progress: 0, target: 3600, reward: '+1% All Stats' }
+        ];
+    }
+    
+    initializeQuests() {
+        return [
+            { 
+                id: 'kill_monsters', 
+                name: 'Monster Hunter', 
+                description: 'Defeat 10 monsters', 
+                reward: 500, 
+                progress: 0, 
+                target: 10, 
+                completed: false,
+                type: 'combat'
+            },
+            { 
+                id: 'earn_gold', 
+                name: 'Gold Rush', 
+                description: 'Earn 1000 gold', 
+                reward: 750, 
+                progress: 0, 
+                target: 1000, 
+                completed: false,
+                type: 'economy'
+            },
+            { 
+                id: 'level_up', 
+                name: 'Level Up', 
+                description: 'Level up 3 times', 
+                reward: 300, 
+                progress: 0, 
+                target: 3, 
+                completed: false,
+                type: 'progression'
+            },
+            { 
+                id: 'buy_equipment', 
+                name: 'Shopping Spree', 
+                description: 'Purchase 2 pieces of equipment', 
+                reward: 400, 
+                progress: 0, 
+                target: 2, 
+                completed: false,
+                type: 'economy'
+            }
         ];
     }
     
@@ -177,6 +303,16 @@ class GameState {
         this.showDamageNumber(damage, isCrit);
         this.playSound(isCrit ? 'crit' : 'attack');
         
+        // Update stats
+        this.stats.totalDamageDealt += damage;
+        if (isCrit) {
+            this.stats.criticalHits++;
+            this.updateAchievementProgress('crit_master', 1);
+        }
+        if (damage > this.stats.highestDamage) {
+            this.stats.highestDamage = damage;
+        }
+        
         this.addToCombatLog(`${isCrit ? 'CRITICAL HIT! ' : ''}You deal ${damage} damage!`);
         
         if (this.currentMonster.hp <= 0) {
@@ -188,6 +324,7 @@ class GameState {
         
         this.updateMonsterDisplay();
         this.updateAchievementProgress('monster_slayer', 1);
+        this.updateQuestProgress('kill_monsters', 1);
     }
     
     monsterAttack() {
@@ -211,11 +348,15 @@ class GameState {
     }
     
     defeatMonster() {
-        const goldReward = Math.floor(this.currentMonster.gold * this.player.goldBonus);
-        const expReward = this.currentMonster.exp;
+        const goldReward = Math.floor(this.currentMonster.gold * this.player.goldBonus * (1 + this.player.prestigeGoldBonus));
+        const expReward = Math.floor(this.currentMonster.exp * (1 + this.player.prestigeExpBonus));
         
         this.player.gold += goldReward;
         this.player.exp += expReward;
+        
+        // Update stats
+        this.stats.monstersDefeated++;
+        this.stats.totalGoldEarned += goldReward;
         
         this.addToCombatLog(`You defeated ${this.currentMonster.name}!`);
         this.addToCombatLog(`Gained ${goldReward} gold and ${expReward} EXP!`);
@@ -225,9 +366,11 @@ class GameState {
             this.levelUp();
         }
         
-        // Check achievements
+        // Check achievements and quests
         this.updateAchievementProgress('first_kill', 1);
         this.updateAchievementProgress('rich_1000', goldReward);
+        this.updateAchievementProgress('rich_10000', goldReward);
+        this.updateQuestProgress('earn_gold', goldReward);
         
         // Spawn new monster after delay
         setTimeout(() => {
@@ -252,7 +395,11 @@ class GameState {
         this.playSound('levelUp');
         this.showNotification('Level Up!', 'You have reached a new level!');
         
+        // Update achievements and quests
         this.updateAchievementProgress('level_5', 1);
+        this.updateAchievementProgress('level_25', 1);
+        this.updateQuestProgress('level_up', 1);
+        
         this.updatePlayerDisplay();
     }
     
@@ -272,6 +419,10 @@ class GameState {
         if (this.player.gold >= cost) {
             this.player.gold -= cost;
             skill.level++;
+            
+            // Update stats
+            this.stats.goldSpent += cost;
+            this.stats.skillsUpgraded++;
             
             // Apply skill effects
             switch (skillName) {
@@ -332,6 +483,10 @@ class GameState {
         if (this.player.gold >= item.cost) {
             this.player.gold -= item.cost;
             
+            // Update stats
+            this.stats.goldSpent += item.cost;
+            this.stats.itemsPurchased++;
+            
             // Add to inventory
             this.inventory.push({ ...item, id: Date.now() });
             
@@ -339,6 +494,7 @@ class GameState {
             this.updateInventoryDisplay();
             this.updatePlayerDisplay();
             this.updateAchievementProgress('equipment_collector', 1);
+            this.updateQuestProgress('buy_equipment', 1);
             
             return true;
         }
@@ -404,11 +560,266 @@ class GameState {
         
         if (achievement.progress >= achievement.target) {
             achievement.unlocked = true;
-            this.playSound('achievement');
-            this.showNotification('Achievement Unlocked!', achievement.name);
-        }
+        this.playSound('achievement');
+        this.showNotification('Achievement Unlocked!', achievement.name);
+    }
+    
+    this.updateAchievementsDisplay();
+}
+
+// Tutorial System Methods
+startTutorial() {
+    if (this.tutorial.completed) return;
+    
+    this.tutorial.currentStep = 0;
+    this.updateTutorialDisplay();
+    document.getElementById('tutorial-overlay').style.display = 'flex';
+}
+
+updateTutorialDisplay() {
+    const step = this.tutorial.steps[this.tutorial.currentStep];
+    const overlay = document.getElementById('tutorial-overlay');
+    
+    if (!step || this.tutorial.currentStep >= this.tutorial.steps.length) {
+        this.completeTutorial();
+        return;
+    }
+    
+    document.getElementById('tutorial-title').textContent = step.title;
+    document.getElementById('tutorial-text').textContent = step.text;
+    document.getElementById('tutorial-step').textContent = `Step ${this.tutorial.currentStep + 1} of ${this.tutorial.steps.length}`;
+    
+    const progressFill = document.getElementById('tutorial-progress-fill');
+    const progressPercent = ((this.tutorial.currentStep + 1) / this.tutorial.steps.length) * 100;
+    progressFill.style.width = progressPercent + '%';
+    
+    // Update button states
+    document.getElementById('tutorial-prev').disabled = this.tutorial.currentStep === 0;
+    document.getElementById('tutorial-next').disabled = false;
+    
+    // Highlight target element
+    if (step.target) {
+        this.highlightElement(step.target);
+    }
+}
+
+highlightElement(selector) {
+    // Remove previous highlights
+    document.querySelectorAll('.tutorial-highlight').forEach(el => {
+        el.classList.remove('tutorial-highlight');
+    });
+    
+    const element = document.querySelector(selector);
+    if (element) {
+        element.classList.add('tutorial-highlight');
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+nextTutorialStep() {
+    if (this.tutorial.currentStep < this.tutorial.steps.length - 1) {
+        this.tutorial.currentStep++;
+        this.updateTutorialDisplay();
+    } else {
+        this.completeTutorial();
+    }
+}
+
+prevTutorialStep() {
+    if (this.tutorial.currentStep > 0) {
+        this.tutorial.currentStep--;
+        this.updateTutorialDisplay();
+    }
+}
+
+completeTutorial() {
+    this.tutorial.completed = true;
+    document.getElementById('tutorial-overlay').style.display = 'none';
+    document.querySelectorAll('.tutorial-highlight').forEach(el => {
+        el.classList.remove('tutorial-highlight');
+    });
+    this.showNotification('Tutorial Complete!', 'You now know how to play the game!');
+}
+
+skipTutorial() {
+    if (confirm('Are you sure you want to skip the tutorial? You can always restart it from the help menu.')) {
+        this.completeTutorial();
+    }
+}
+
+// Quest System Methods
+updateQuestProgress(questId, progress) {
+    const quest = this.quests.find(q => q.id === questId);
+    if (!quest || quest.completed) return;
+    
+    quest.progress += progress;
+    
+    if (quest.progress >= quest.target) {
+        quest.completed = true;
+        this.completeQuest(quest);
+    }
+    
+    this.updateQuestsDisplay();
+}
+
+completeQuest(quest) {
+    this.player.gold += quest.reward;
+    this.stats.totalGoldEarned += quest.reward;
+    
+    this.playSound('achievement');
+    this.showNotification('Quest Complete!', `Completed ${quest.name} and earned ${quest.reward} gold!`);
+    
+    // Update achievement progress
+    this.updateAchievementProgress('quest_completer', 1);
+    
+    this.updatePlayerDisplay();
+}
+
+updateQuestsDisplay() {
+    const questsList = document.getElementById('quests-list');
+    questsList.innerHTML = '';
+    
+    this.quests.forEach(quest => {
+        const questEl = document.createElement('div');
+        questEl.className = `quest ${quest.completed ? 'completed' : ''}`;
         
-        this.updateAchievementsDisplay();
+        const progressPercent = Math.min(100, (quest.progress / quest.target) * 100);
+        
+        questEl.innerHTML = `
+            <div class="quest-header">
+                <div class="quest-title">${quest.name}</div>
+                <div class="quest-reward">${quest.reward} 💰</div>
+            </div>
+            <div class="quest-description">${quest.description}</div>
+            <div class="quest-progress">
+                <div class="quest-progress-bar">
+                    <div class="quest-progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+                <div class="quest-progress-text">${quest.progress}/${quest.target}</div>
+            </div>
+        `;
+        
+        questsList.appendChild(questEl);
+    });
+    
+    // Update quest timer
+    this.updateQuestTimer();
+}
+
+updateQuestTimer() {
+    const now = Date.now();
+    const timeUntilReset = 24 * 60 * 60 * 1000 - (now - this.lastQuestReset) % (24 * 60 * 60 * 1000);
+    
+    const hours = Math.floor(timeUntilReset / (60 * 60 * 1000));
+    const minutes = Math.floor((timeUntilReset % (60 * 60 * 1000)) / (60 * 1000));
+    const seconds = Math.floor((timeUntilReset % (60 * 1000)) / 1000);
+    
+    document.getElementById('quest-timer').textContent = 
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+    resetQuests() {
+        this.lastQuestReset = Date.now();
+        this.quests.forEach(quest => {
+            quest.progress = 0;
+            quest.completed = false;
+        });
+        this.updateQuestsDisplay();
+        this.showNotification('Quests Reset!', 'New daily quests are now available!');
+    }
+
+    // Prestige System Methods
+    canPrestige() {
+        return this.player.level >= 50 && 
+               this.player.gold >= 10000 && 
+               this.achievements.filter(a => a.unlocked).length >= 3;
+    }
+    
+    prestige() {
+        if (!this.canPrestige()) return false;
+        
+        this.player.prestigeLevel++;
+        this.player.prestigeGoldBonus += 0.5; // +50% gold gain
+        this.player.prestigeExpBonus += 0.25; // +25% exp gain
+        
+        // Reset player progress
+        this.player.level = 1;
+        this.player.hp = 100;
+        this.player.maxHp = 100;
+        this.player.strength = 10;
+        this.player.defense = 5;
+        this.player.gold = 0;
+        this.player.exp = 0;
+        this.player.expToNext = 100;
+        
+        // Reset skills
+        Object.keys(this.skills).forEach(skill => {
+            this.skills[skill].level = 0;
+        });
+        
+        // Reset equipment
+        this.equipment = {
+            weapon: { name: 'Rusty Sword', damage: 5, cost: 0 },
+            armor: { name: 'Cloth Armor', defense: 2, cost: 0 },
+            accessory: null
+        };
+        
+        // Reset inventory
+        this.inventory = [];
+        
+        this.playSound('achievement');
+        this.showNotification('Prestige Complete!', `You are now prestige level ${this.player.prestigeLevel}!`);
+        
+        this.updateAchievementProgress('prestige_master', 1);
+        this.updateAllDisplays();
+        
+        return true;
+    }
+    
+    updatePrestigeDisplay() {
+        const prestigeBtn = document.getElementById('prestige-btn');
+        const canPrestige = this.canPrestige();
+        
+        if (canPrestige) {
+            prestigeBtn.disabled = false;
+            prestigeBtn.textContent = `Prestige (Level ${this.player.prestigeLevel + 1})`;
+            prestigeBtn.style.background = 'linear-gradient(135deg, #ffd700, #ffed4e)';
+        } else {
+            prestigeBtn.disabled = true;
+            prestigeBtn.textContent = 'Prestige Not Available';
+            prestigeBtn.style.background = 'rgba(255, 255, 255, 0.1)';
+        }
+    }
+    
+    // Stats Tracking Methods
+    updateStatsDisplay() {
+        document.getElementById('stat-monsters-defeated').textContent = this.stats.monstersDefeated.toLocaleString();
+        document.getElementById('stat-damage-dealt').textContent = this.stats.totalDamageDealt.toLocaleString();
+        document.getElementById('stat-crit-hits').textContent = this.stats.criticalHits.toLocaleString();
+        document.getElementById('stat-highest-damage').textContent = this.stats.highestDamage.toLocaleString();
+        document.getElementById('stat-gold-earned').textContent = this.stats.totalGoldEarned.toLocaleString();
+        document.getElementById('stat-gold-spent').textContent = this.stats.goldSpent.toLocaleString();
+        document.getElementById('stat-items-purchased').textContent = this.stats.itemsPurchased.toLocaleString();
+        document.getElementById('stat-skills-upgraded').textContent = this.stats.skillsUpgraded.toLocaleString();
+        
+        const timePlayed = Math.floor((Date.now() - this.gameStartTime) / 1000);
+        const hours = Math.floor(timePlayed / 3600);
+        const minutes = Math.floor((timePlayed % 3600) / 60);
+        const seconds = timePlayed % 60;
+        
+        document.getElementById('stat-time-played').textContent = 
+            hours > 0 ? `${hours}h ${minutes}m ${seconds}s` : `${minutes}m ${seconds}s`;
+        
+        document.getElementById('stat-game-started').textContent = this.stats.gameStarted;
+        
+        const unlockedAchievements = this.achievements.filter(a => a.unlocked).length;
+        document.getElementById('stat-achievements').textContent = `${unlockedAchievements}/${this.achievements.length}`;
+        
+        document.getElementById('stat-prestige-level').textContent = this.player.prestigeLevel;
+        
+        // Update time played achievement
+        this.updateAchievementProgress('time_played', timePlayed - this.stats.timePlayed);
+        this.stats.timePlayed = timePlayed;
     }
     
     updateAchievementsDisplay() {
@@ -527,7 +938,11 @@ class GameState {
             skills: this.skills,
             inventory: this.inventory,
             achievements: this.achievements,
-            gameStartTime: this.gameStartTime
+            quests: this.quests,
+            stats: this.stats,
+            tutorial: this.tutorial,
+            gameStartTime: this.gameStartTime,
+            lastQuestReset: this.lastQuestReset
         };
         
         localStorage.setItem('idleRpgSave', JSON.stringify(saveData));
@@ -539,12 +954,16 @@ class GameState {
         if (saveData) {
             const data = JSON.parse(saveData);
             
-            this.player = data.player;
-            this.equipment = data.equipment;
-            this.skills = data.skills;
-            this.inventory = data.inventory;
-            this.achievements = data.achievements;
-            this.gameStartTime = data.gameStartTime;
+            this.player = data.player || this.player;
+            this.equipment = data.equipment || this.equipment;
+            this.skills = data.skills || this.skills;
+            this.inventory = data.inventory || this.inventory;
+            this.achievements = data.achievements || this.achievements;
+            this.quests = data.quests || this.quests;
+            this.stats = data.stats || this.stats;
+            this.tutorial = data.tutorial || this.tutorial;
+            this.gameStartTime = data.gameStartTime || this.gameStartTime;
+            this.lastQuestReset = data.lastQuestReset || this.lastQuestReset;
             
             // Reapply skill effects
             this.player.autoAttack = this.skills['auto-attack'].level > 0;
@@ -573,6 +992,9 @@ class GameState {
         this.updateEquipmentDisplay();
         this.updateInventoryDisplay();
         this.updateAchievementsDisplay();
+        this.updateQuestsDisplay();
+        this.updatePrestigeDisplay();
+        this.updateStatsDisplay();
     }
 }
 
@@ -694,6 +1116,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
+    // Tutorial controls
+    document.getElementById('tutorial-next').addEventListener('click', () => game.nextTutorialStep());
+    document.getElementById('tutorial-prev').addEventListener('click', () => game.prevTutorialStep());
+    document.getElementById('tutorial-close').addEventListener('click', () => game.skipTutorial());
+    document.getElementById('tutorial-skip').addEventListener('click', () => game.skipTutorial());
+    
+    // Help system
+    document.getElementById('help-btn').addEventListener('click', () => {
+        document.getElementById('help-panel').style.display = 'block';
+    });
+    document.getElementById('help-close').addEventListener('click', () => {
+        document.getElementById('help-panel').style.display = 'none';
+    });
+    document.getElementById('tutorial-btn').addEventListener('click', () => {
+        game.startTutorial();
+    });
+    
+    // Prestige system
+    document.getElementById('prestige-btn').addEventListener('click', () => {
+        if (confirm('Are you sure you want to prestige? This will reset your level, skills, and equipment, but give you permanent bonuses!')) {
+            game.prestige();
+        }
+    });
+    
+    // Quest timer update
+    setInterval(() => {
+        game.updateQuestTimer();
+    }, 1000);
+    
+    // Quest reset check (every minute)
+    setInterval(() => {
+        const now = Date.now();
+        const timeSinceLastReset = now - game.lastQuestReset;
+        if (timeSinceLastReset >= 24 * 60 * 60 * 1000) {
+            game.resetQuests();
+        }
+    }, 60000);
+    
+    // Stats update (every 5 seconds)
+    setInterval(() => {
+        game.updateStatsDisplay();
+    }, 5000);
+    
     // Auto-save every 30 seconds
     setInterval(() => {
         game.saveGame();
@@ -702,6 +1167,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Try to load saved game on startup
     game.loadGame();
     
-    console.log('Idle RPG Game initialized!');
+    // Start tutorial if first time playing
+    if (!game.tutorial.completed) {
+        setTimeout(() => {
+            game.startTutorial();
+        }, 1000);
+    }
+    
+    console.log('Enhanced Idle RPG Game initialized!');
 });
 

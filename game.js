@@ -97,10 +97,37 @@ class GameState {
         };
         
         this.skills = {
-            'auto-attack': { level: 0, maxLevel: 10 },
-            'crit-chance': { level: 0, maxLevel: 10 },
-            'gold-bonus': { level: 0, maxLevel: 10 },
-            'health-regen': { level: 0, maxLevel: 10 }
+            // Combat Skills
+            'auto-attack': { level: 0, cost: 100, effect: 0.1, maxLevel: 50, type: 'combat' },
+            'crit-chance': { level: 0, cost: 250, effect: 0.02, maxLevel: 25, type: 'combat' },
+            'double-strike': { level: 0, cost: 500, effect: 0.05, maxLevel: 20, type: 'combat' },
+            'berserker': { level: 0, cost: 1000, effect: 0.1, maxLevel: 15, type: 'combat' },
+            'executioner': { level: 0, cost: 2000, effect: 0.15, maxLevel: 10, type: 'combat' },
+            'devastation': { level: 0, cost: 5000, effect: 0.2, maxLevel: 5, type: 'combat' },
+            
+            // Economy Skills
+            'gold-bonus': { level: 0, cost: 300, effect: 0.1, maxLevel: 20, type: 'economy' },
+            'treasure-hunter': { level: 0, cost: 800, effect: 0.15, maxLevel: 15, type: 'economy' },
+            'merchant': { level: 0, cost: 1500, effect: 0.2, maxLevel: 12, type: 'economy' },
+            'golden-touch': { level: 0, cost: 3000, effect: 0.25, maxLevel: 10, type: 'economy' },
+            'philosophers-stone': { level: 0, cost: 8000, effect: 0.3, maxLevel: 8, type: 'economy' },
+            'midas-touch': { level: 0, cost: 20000, effect: 0.5, maxLevel: 5, type: 'economy' },
+            
+            // Utility Skills
+            'health-regen': { level: 0, cost: 200, effect: 1, maxLevel: 30, type: 'utility' },
+            'vitality': { level: 0, cost: 600, effect: 10, maxLevel: 20, type: 'utility' },
+            'swiftness': { level: 0, cost: 1200, effect: 0.05, maxLevel: 15, type: 'utility' },
+            'fortitude': { level: 0, cost: 2500, effect: 0.1, maxLevel: 12, type: 'utility' },
+            'immortality': { level: 0, cost: 10000, effect: 0.2, maxLevel: 8, type: 'utility' },
+            'transcendence': { level: 0, cost: 50000, effect: 0.5, maxLevel: 5, type: 'utility' },
+            
+            // Prestige Skills
+            'prestige-power': { level: 0, cost: 100, effect: 0.05, maxLevel: 50, type: 'prestige', currency: 'gems' },
+            'eternal-wisdom': { level: 0, cost: 250, effect: 0.1, maxLevel: 25, type: 'prestige', currency: 'gems' },
+            'cosmic-force': { level: 0, cost: 500, effect: 0.15, maxLevel: 20, type: 'prestige', currency: 'gems' },
+            'divine-blessing': { level: 0, cost: 1000, effect: 0.2, maxLevel: 15, type: 'prestige', currency: 'gems' },
+            'reality-bender': { level: 0, cost: 2500, effect: 0.25, maxLevel: 12, type: 'prestige', currency: 'gems' },
+            'omnipotence': { level: 0, cost: 10000, effect: 0.5, maxLevel: 8, type: 'prestige', currency: 'gems' }
         };
         
         this.inventory = [];

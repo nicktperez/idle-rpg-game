@@ -95,20 +95,88 @@
         <main class="game-main">
             <!-- Combat area -->
             <section class="combat-area">
-                <div class="monster-display">
-                    <div class="monster-sprite" id="monster-sprite">DRAGON</div>
-                    <div class="monster-info">
-                        <h3 id="monster-name">Baby Dragon</h3>
-                        <div class="monster-stats">
-                            <div class="monster-hp-bar">
-                                <div class="hp-fill" id="monster-hp-fill"></div>
-                                <span class="hp-text" id="monster-hp-text">50/50</span>
+                <div class="side-scroll-container">
+                    <div class="dungeon-background">
+                        <!-- SVG Background Elements -->
+                        <svg class="dungeon-svg" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet">
+                            <!-- Dungeon Floor -->
+                            <rect x="0" y="250" width="800" height="50" fill="#4a3728" stroke="#8b4513" stroke-width="2"/>
+                            <!-- Stone Bricks Pattern -->
+                            <defs>
+                                <pattern id="brickPattern" x="0" y="0" width="80" height="40" patternUnits="userSpaceOnUse">
+                                    <rect width="80" height="40" fill="#654321"/>
+                                    <rect x="0" y="0" width="80" height="2" fill="#8b4513"/>
+                                    <rect x="0" y="38" width="80" height="2" fill="#8b4513"/>
+                                    <rect x="0" y="0" width="2" height="40" fill="#8b4513"/>
+                                    <rect x="78" y="0" width="2" height="40" fill="#8b4513"/>
+                                    <rect x="40" y="20" width="2" height="20" fill="#8b4513"/>
+                                </pattern>
+                                <pattern id="wallPattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+                                    <rect width="100" height="100" fill="#2c1810"/>
+                                    <circle cx="20" cy="20" r="3" fill="#8b4513" opacity="0.3"/>
+                                    <circle cx="80" cy="30" r="2" fill="#8b4513" opacity="0.2"/>
+                                    <circle cx="50" cy="70" r="4" fill="#8b4513" opacity="0.4"/>
+                                    <circle cx="90" cy="80" r="2" fill="#8b4513" opacity="0.3"/>
+                                </pattern>
+                            </defs>
+                            
+                            <!-- Dungeon Walls -->
+                            <rect x="0" y="0" width="800" height="250" fill="url(#wallPattern)"/>
+                            
+                            <!-- Torches -->
+                            <g class="torches">
+                                <g transform="translate(100, 180)">
+                                    <rect x="-2" y="0" width="4" height="60" fill="#8b4513"/>
+                                    <circle cx="0" cy="20" r="15" fill="#ff6347" opacity="0.8">
+                                        <animate attributeName="r" values="15;18;15" dur="2s" repeatCount="indefinite"/>
+                                        <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+                                    </circle>
+                                    <circle cx="0" cy="20" r="8" fill="#ffd700" opacity="0.9">
+                                        <animate attributeName="r" values="8;10;8" dur="1.5s" repeatCount="indefinite"/>
+                                    </circle>
+                                </g>
+                                <g transform="translate(700, 180)">
+                                    <rect x="-2" y="0" width="4" height="60" fill="#8b4513"/>
+                                    <circle cx="0" cy="20" r="15" fill="#ff6347" opacity="0.8">
+                                        <animate attributeName="r" values="15;18;15" dur="2s" repeatCount="indefinite"/>
+                                        <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+                                    </circle>
+                                    <circle cx="0" cy="20" r="8" fill="#ffd700" opacity="0.9">
+                                        <animate attributeName="r" values="8;10;8" dur="1.5s" repeatCount="indefinite"/>
+                                    </circle>
+                                </g>
+                            </g>
+                            
+                            <!-- Cobwebs -->
+                            <g class="cobwebs" opacity="0.6">
+                                <path d="M 200 100 Q 210 80 220 100 Q 230 120 220 100 Q 210 80 200 100" stroke="#8b4513" stroke-width="1" fill="none"/>
+                                <path d="M 600 120 Q 610 100 620 120 Q 630 140 620 120 Q 610 100 600 120" stroke="#8b4513" stroke-width="1" fill="none"/>
+                            </g>
+                            
+                            <!-- Chains -->
+                            <g class="chains" stroke="#654321" stroke-width="3" fill="none">
+                                <path d="M 150 50 Q 150 100 150 150"/>
+                                <path d="M 650 50 Q 650 100 650 150"/>
+                            </g>
+                        </svg>
+                        
+                        <!-- Combat Sprites -->
+                        <div class="monster-display">
+                            <div class="monster-sprite" id="monster-sprite">DRAGON</div>
+                            <div class="monster-info">
+                                <h3 id="monster-name">Baby Dragon</h3>
+                                <div class="monster-stats">
+                                    <div class="monster-hp-bar">
+                                        <div class="hp-fill" id="monster-hp-fill"></div>
+                                        <span class="hp-text" id="monster-hp-text">50/50</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        <div class="player-display">
+                            <div class="player-sprite" id="player-sprite">HERO</div>
+                        </div>
                     </div>
-                </div>
-                <div class="player-display">
-                    <div class="player-sprite" id="player-sprite">HERO</div>
                 </div>
                 <div class="combat-log" id="combat-log"></div>
             </section>
@@ -129,31 +197,175 @@
             <div class="tab-content">
                 <!-- Skills tab -->
                 <div class="tab-panel active" id="skills-panel">
-                    <h2>Skill Tree</h2>
-                    <div class="skill-tree">
-                        <div class="skill-node" data-skill="auto-attack">
-                            <div class="skill-icon">AUTO</div>
-                            <div class="skill-name">Auto Attack</div>
-                            <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
-                            <div class="skill-cost">Cost: <span class="skill-cost-num">100</span> GOLD</div>
+                    <h2>Upgrade Tree</h2>
+                    <div class="upgrade-tabs">
+                        <button class="upgrade-tab active" data-category="combat">Combat</button>
+                        <button class="upgrade-tab" data-category="economy">Economy</button>
+                        <button class="upgrade-tab" data-category="utility">Utility</button>
+                        <button class="upgrade-tab" data-category="prestige">Prestige</button>
+                    </div>
+                    
+                    <div class="upgrade-category active" id="combat-upgrades">
+                        <div class="skill-tree">
+                            <div class="skill-node" data-skill="auto-attack">
+                                <div class="skill-icon">⚔️</div>
+                                <div class="skill-name">Auto Attack</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">100</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="crit-chance">
+                                <div class="skill-icon">🎯</div>
+                                <div class="skill-name">Critical Strike</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">250</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="double-strike">
+                                <div class="skill-icon">⚡</div>
+                                <div class="skill-name">Double Strike</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">500</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="berserker">
+                                <div class="skill-icon">🔥</div>
+                                <div class="skill-name">Berserker</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">1000</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="executioner">
+                                <div class="skill-icon">💀</div>
+                                <div class="skill-name">Executioner</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">2000</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="devastation">
+                                <div class="skill-icon">💥</div>
+                                <div class="skill-name">Devastation</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">5000</span> GOLD</div>
+                            </div>
                         </div>
-                        <div class="skill-node" data-skill="crit-chance">
-                            <div class="skill-icon">CRIT</div>
-                            <div class="skill-name">Critical Strike</div>
-                            <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
-                            <div class="skill-cost">Cost: <span class="skill-cost-num">250</span> GOLD</div>
+                    </div>
+                    
+                    <div class="upgrade-category" id="economy-upgrades">
+                        <div class="skill-tree">
+                            <div class="skill-node" data-skill="gold-bonus">
+                                <div class="skill-icon">💰</div>
+                                <div class="skill-name">Gold Rush</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">300</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="treasure-hunter">
+                                <div class="skill-icon">🗝️</div>
+                                <div class="skill-name">Treasure Hunter</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">800</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="merchant">
+                                <div class="skill-icon">🏪</div>
+                                <div class="skill-name">Merchant</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">1500</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="golden-touch">
+                                <div class="skill-icon">✨</div>
+                                <div class="skill-name">Golden Touch</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">3000</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="philosophers-stone">
+                                <div class="skill-icon">🔮</div>
+                                <div class="skill-name">Philosopher's Stone</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">8000</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="midas-touch">
+                                <div class="skill-icon">👑</div>
+                                <div class="skill-name">Midas Touch</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">20000</span> GOLD</div>
+                            </div>
                         </div>
-                        <div class="skill-node" data-skill="gold-bonus">
-                            <div class="skill-icon">GOLD</div>
-                            <div class="skill-name">Gold Rush</div>
-                            <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
-                            <div class="skill-cost">Cost: <span class="skill-cost-num">500</span> GOLD</div>
+                    </div>
+                    
+                    <div class="upgrade-category" id="utility-upgrades">
+                        <div class="skill-tree">
+                            <div class="skill-node" data-skill="health-regen">
+                                <div class="skill-icon">💚</div>
+                                <div class="skill-name">Regeneration</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">200</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="vitality">
+                                <div class="skill-icon">❤️</div>
+                                <div class="skill-name">Vitality</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">600</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="swiftness">
+                                <div class="skill-icon">💨</div>
+                                <div class="skill-name">Swiftness</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">1200</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="fortitude">
+                                <div class="skill-icon">🛡️</div>
+                                <div class="skill-name">Fortitude</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">2500</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="immortality">
+                                <div class="skill-icon">☠️</div>
+                                <div class="skill-name">Immortality</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">10000</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="transcendence">
+                                <div class="skill-icon">🌟</div>
+                                <div class="skill-name">Transcendence</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">50000</span> GOLD</div>
+                            </div>
                         </div>
-                        <div class="skill-node" data-skill="health-regen">
-                            <div class="skill-icon">HEAL</div>
-                            <div class="skill-name">Regeneration</div>
-                            <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
-                            <div class="skill-cost">Cost: <span class="skill-cost-num">300</span> GOLD</div>
+                    </div>
+                    
+                    <div class="upgrade-category" id="prestige-upgrades">
+                        <div class="skill-tree">
+                            <div class="skill-node" data-skill="prestige-power">
+                                <div class="skill-icon">⭐</div>
+                                <div class="skill-name">Prestige Power</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">100</span> GEMS</div>
+                            </div>
+                            <div class="skill-node" data-skill="eternal-wisdom">
+                                <div class="skill-icon">📚</div>
+                                <div class="skill-name">Eternal Wisdom</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">250</span> GEMS</div>
+                            </div>
+                            <div class="skill-node" data-skill="cosmic-force">
+                                <div class="skill-icon">🌌</div>
+                                <div class="skill-name">Cosmic Force</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">500</span> GEMS</div>
+                            </div>
+                            <div class="skill-node" data-skill="divine-blessing">
+                                <div class="skill-icon">🙏</div>
+                                <div class="skill-name">Divine Blessing</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">1000</span> GEMS</div>
+                            </div>
+                            <div class="skill-node" data-skill="reality-bender">
+                                <div class="skill-icon">🌀</div>
+                                <div class="skill-name">Reality Bender</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">2500</span> GEMS</div>
+                            </div>
+                            <div class="skill-node" data-skill="omnipotence">
+                                <div class="skill-icon">♾️</div>
+                                <div class="skill-name">Omnipotence</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">10000</span> GEMS</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -187,9 +399,239 @@
                         <button class="shop-category active" data-category="weapons">Weapons</button>
                         <button class="shop-category" data-category="armor">Armor</button>
                         <button class="shop-category" data-category="accessories">Accessories</button>
+                        <button class="shop-category" data-category="consumables">Consumables</button>
                     </div>
-                    <div class="shop-items" id="shop-items">
-                        <!-- Shop items will be populated here -->
+                    
+                    <!-- Weapons Shop -->
+                    <div class="shop-category-content active" id="weapons-shop">
+                        <div class="shop-item">
+                            <div class="item-icon">⚔️</div>
+                            <div class="item-info">
+                                <h4>Iron Sword</h4>
+                                <p>+15 Damage</p>
+                                <p class="item-price">500 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="iron-sword" data-price="500">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🗡️</div>
+                            <div class="item-info">
+                                <h4>Steel Blade</h4>
+                                <p>+25 Damage</p>
+                                <p class="item-price">1,200 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="steel-blade" data-price="1200">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">⚡</div>
+                            <div class="item-info">
+                                <h4>Lightning Blade</h4>
+                                <p>+40 Damage</p>
+                                <p class="item-price">2,500 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="lightning-blade" data-price="2500">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🔥</div>
+                            <div class="item-info">
+                                <h4>Fire Sword</h4>
+                                <p>+60 Damage</p>
+                                <p class="item-price">5,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="fire-sword" data-price="5000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">❄️</div>
+                            <div class="item-info">
+                                <h4>Ice Blade</h4>
+                                <p>+80 Damage</p>
+                                <p class="item-price">8,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="ice-blade" data-price="8000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">💎</div>
+                            <div class="item-info">
+                                <h4>Diamond Sword</h4>
+                                <p>+120 Damage</p>
+                                <p class="item-price">15,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="diamond-sword" data-price="15000">Buy</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Armor Shop -->
+                    <div class="shop-category-content" id="armor-shop">
+                        <div class="shop-item">
+                            <div class="item-icon">🛡️</div>
+                            <div class="item-info">
+                                <h4>Leather Armor</h4>
+                                <p>+8 Defense</p>
+                                <p class="item-price">300 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="leather-armor" data-price="300">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🔰</div>
+                            <div class="item-info">
+                                <h4>Chain Mail</h4>
+                                <p>+15 Defense</p>
+                                <p class="item-price">800 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="chain-mail" data-price="800">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🛡️</div>
+                            <div class="item-info">
+                                <h4>Plate Armor</h4>
+                                <p>+25 Defense</p>
+                                <p class="item-price">2,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="plate-armor" data-price="2000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🐲</div>
+                            <div class="item-info">
+                                <h4>Dragon Scale Armor</h4>
+                                <p>+40 Defense</p>
+                                <p class="item-price">5,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="dragon-scale-armor" data-price="5000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🌟</div>
+                            <div class="item-info">
+                                <h4>Mystic Armor</h4>
+                                <p>+65 Defense</p>
+                                <p class="item-price">12,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="mystic-armor" data-price="12000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">👑</div>
+                            <div class="item-info">
+                                <h4>Royal Armor</h4>
+                                <p>+100 Defense</p>
+                                <p class="item-price">25,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="royal-armor" data-price="25000">Buy</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Accessories Shop -->
+                    <div class="shop-category-content" id="accessories-shop">
+                        <div class="shop-item">
+                            <div class="item-icon">💍</div>
+                            <div class="item-info">
+                                <h4>Power Ring</h4>
+                                <p>+5 Damage, +5 Defense</p>
+                                <p class="item-price">1,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="power-ring" data-price="1000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🔮</div>
+                            <div class="item-info">
+                                <h4>Magic Amulet</h4>
+                                <p>+10 Damage, +10 Defense</p>
+                                <p class="item-price">2,500 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="magic-amulet" data-price="2500">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">⚡</div>
+                            <div class="item-info">
+                                <h4>Lightning Pendant</h4>
+                                <p>+20 Damage</p>
+                                <p class="item-price">4,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="lightning-pendant" data-price="4000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🛡️</div>
+                            <div class="item-info">
+                                <h4>Guardian Bracelet</h4>
+                                <p>+20 Defense</p>
+                                <p class="item-price">4,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="guardian-bracelet" data-price="4000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">💎</div>
+                            <div class="item-info">
+                                <h4>Crown of Power</h4>
+                                <p>+30 Damage, +30 Defense</p>
+                                <p class="item-price">10,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="crown-of-power" data-price="10000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🌟</div>
+                            <div class="item-info">
+                                <h4>Infinity Stone</h4>
+                                <p>+50 Damage, +50 Defense</p>
+                                <p class="item-price">50,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="infinity-stone" data-price="50000">Buy</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Consumables Shop -->
+                    <div class="shop-category-content" id="consumables-shop">
+                        <div class="shop-item">
+                            <div class="item-icon">🧪</div>
+                            <div class="item-info">
+                                <h4>Health Potion</h4>
+                                <p>Restore 50 HP</p>
+                                <p class="item-price">100 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="health-potion" data-price="100">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">💚</div>
+                            <div class="item-info">
+                                <h4>Greater Health Potion</h4>
+                                <p>Restore 100 HP</p>
+                                <p class="item-price">200 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="greater-health-potion" data-price="200">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">⚡</div>
+                            <div class="item-info">
+                                <h4>Damage Boost</h4>
+                                <p>+25% Damage for 10 minutes</p>
+                                <p class="item-price">500 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="damage-boost" data-price="500">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🛡️</div>
+                            <div class="item-info">
+                                <h4>Defense Boost</h4>
+                                <p>+25% Defense for 10 minutes</p>
+                                <p class="item-price">500 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="defense-boost" data-price="500">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">💰</div>
+                            <div class="item-info">
+                                <h4>Gold Boost</h4>
+                                <p>+50% Gold for 10 minutes</p>
+                                <p class="item-price">750 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="gold-boost" data-price="750">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">⭐</div>
+                            <div class="item-info">
+                                <h4>EXP Boost</h4>
+                                <p>+100% EXP for 10 minutes</p>
+                                <p class="item-price">1,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="exp-boost" data-price="1000">Buy</button>
+                        </div>
                     </div>
                 </div>
 

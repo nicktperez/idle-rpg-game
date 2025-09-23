@@ -1675,7 +1675,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // World Map Navigation
     document.querySelectorAll('.map-location').forEach(location => {
+        console.log('Setting up event listener for:', location.dataset.location);
         location.addEventListener('click', () => {
+            console.log('Location clicked:', location.dataset.location);
             const locationId = location.dataset.location;
             game.navigateToLocation(locationId);
         });

@@ -1570,12 +1570,12 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('active');
             
             const category = btn.dataset.category;
-            const shopItems = document.getElementById('shop-items');
-            if (!shopItems) {
+            const shopContainer = document.getElementById('shop-items');
+            if (!shopContainer) {
                 console.log('Shop items container not found');
                 return;
             }
-            shopItems.innerHTML = '';
+            shopContainer.innerHTML = '';
             
             // Use the shopItems data from the global constant
             if (!shopItems || !shopItems[category]) {
@@ -1620,7 +1620,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
                 
-                shopItems.appendChild(itemEl);
+                shopContainer.appendChild(itemEl);
             });
         });
     });
@@ -1636,21 +1636,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // Combat area event listeners will be set up dynamically when navigating to battle area
     
     // Tutorial controls
-    document.getElementById('tutorial-next').addEventListener('click', () => game.nextTutorialStep());
-    document.getElementById('tutorial-prev').addEventListener('click', () => game.prevTutorialStep());
-    document.getElementById('tutorial-close').addEventListener('click', () => game.skipTutorial());
-    document.getElementById('tutorial-skip').addEventListener('click', () => game.skipTutorial());
+    const tutorialNext = document.getElementById('tutorial-next');
+    const tutorialPrev = document.getElementById('tutorial-prev');
+    const tutorialClose = document.getElementById('tutorial-close');
+    const tutorialBtn = document.getElementById('tutorial-btn');
     
+    if (tutorialNext) tutorialNext.addEventListener('click', () => game.nextTutorialStep());
+    if (tutorialPrev) tutorialPrev.addEventListener('click', () => game.prevTutorialStep());
+    if (tutorialClose) tutorialClose.addEventListener('click', () => game.skipTutorial());
+    if (tutorialBtn) tutorialBtn.addEventListener('click', () => game.startTutorial());
     // Help system
-    document.getElementById('help-btn').addEventListener('click', () => {
-        document.getElementById('help-panel').style.display = 'block';
-    });
-    document.getElementById('help-close').addEventListener('click', () => {
-        document.getElementById('help-panel').style.display = 'none';
-    });
-    document.getElementById('tutorial-btn').addEventListener('click', () => {
-        game.startTutorial();
-    });
+    const helpBtn = document.getElementById('help-btn');
+    const helpClose = document.getElementById('help-close');
+    
+    if (helpBtn) {
+        helpBtn.addEventListener('click', () => {
+            const helpPanel = document.getElementById('help-panel');
+            if (helpPanel) helpPanel.style.display = 'block';
+        });
+    }
+    
+    if (helpClose) {
+        helpClose.addEventListener('click', () => {
+            const helpPanel = document.getElementById('help-panel');
+            if (helpPanel) helpPanel.style.display = 'none';
+        });
+    }
+    
     
     // Prestige system
     document.getElementById('prestige-btn').addEventListener('click', () => {

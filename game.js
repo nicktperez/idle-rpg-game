@@ -606,6 +606,63 @@ class GameState {
         console.log('Combat effects triggered');
     }
     
+    showHeroAttackAnimation() {
+        const heroSprite = document.getElementById('player-sprite');
+        if (heroSprite) {
+            heroSprite.classList.add('attacking');
+            
+            // Remove animation class after animation completes
+            setTimeout(() => {
+                heroSprite.classList.remove('attacking');
+            }, 600);
+        }
+    }
+    
+    showFloatingDamage(damage, isCrit, target) {
+        const floatingContainer = document.getElementById('floating-damage');
+        if (!floatingContainer) return;
+        
+        // Get target position
+        const targetElement = target === 'monster' ? 
+            document.getElementById('monster-sprite') : 
+            document.getElementById('player-sprite');
+        
+        if (!targetElement) return;
+        
+        const rect = targetElement.getBoundingClientRect();
+        const containerRect = floatingContainer.getBoundingClientRect();
+        
+        // Create damage number element
+        const damageElement = document.createElement('div');
+        damageElement.className = 'damage-number';
+        
+        if (isCrit) {
+            damageElement.classList.add('critical');
+            damageElement.textContent = `CRIT! ${damage}`;
+        } else {
+            damageElement.textContent = `-${damage}`;
+        }
+        
+        // Position above the target
+        const x = rect.left - containerRect.left + (rect.width / 2) - 30;
+        const y = rect.top - containerRect.top - 20;
+        
+        damageElement.style.left = x + 'px';
+        damageElement.style.top = y + 'px';
+        
+        // Add to container
+        floatingContainer.appendChild(damageElement);
+        
+        // Remove after animation
+        setTimeout(() => {
+            if (floatingContainer.contains(damageElement)) {
+                floatingContainer.removeChild(damageElement);
+            }
+        }, 1500);
+        
+        console.log('Floating damage shown:', damage, 'Critical:', isCrit);
+    }
+    
     updatePlayerDisplay() {
         document.getElementById('player-level').textContent = this.player.level;
         document.getElementById('player-hp').textContent = this.player.hp;
@@ -628,6 +685,9 @@ class GameState {
         
         console.log('Attacking monster:', this.currentMonster.name, 'HP:', this.currentMonster.hp);
         
+        // Add hero attack animation
+        this.showHeroAttackAnimation();
+        
         // Add visual combat effects
         this.showCombatEffects();
         
@@ -645,6 +705,7 @@ class GameState {
         // Show damage after animation
         setTimeout(() => {
             this.currentMonster.hp -= damage;
+            this.showFloatingDamage(damage, isCrit, 'monster');
             this.showDamageNumber(damage, isCrit);
             this.playSound(isCrit ? 'crit' : 'attack');
             
@@ -696,6 +757,7 @@ class GameState {
         
         setTimeout(() => {
             this.player.hp -= damage;
+            this.showFloatingDamage(damage, false, 'player');
             this.showDamageNumber(damage, false, true);
             
             // Player damage animation

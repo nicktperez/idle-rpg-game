@@ -412,6 +412,11 @@ class GameState {
             if (targetSection) {
                 targetSection.classList.add('active');
                 console.log('Showing location section:', this.currentLocation);
+                
+                // Update displays when entering battle area
+                if (this.currentLocation === 'battle') {
+                    this.updateAllDisplays();
+                }
             } else {
                 console.error('Location section not found:', this.currentLocation + '-area');
             }
@@ -511,6 +516,8 @@ class GameState {
         const monsterHpFill = document.getElementById('monster-hp-fill');
         const monsterHpText = document.getElementById('monster-hp-text');
         
+        console.log('Updating monster display:', this.currentMonster?.name, 'HP:', this.currentMonster?.hp, '/', this.currentMonster?.maxHp);
+        
         if (this.currentMonster) {
             // Clear any existing content
             monsterSprite.innerHTML = '';
@@ -554,8 +561,21 @@ class GameState {
             monsterName.textContent = this.currentMonster.name;
             
             const hpPercent = (this.currentMonster.hp / this.currentMonster.maxHp) * 100;
-            monsterHpFill.style.width = hpPercent + '%';
-            monsterHpText.textContent = `${this.currentMonster.hp}/${this.currentMonster.maxHp}`;
+            console.log('Setting HP bar to:', hpPercent + '%', 'Elements found:', !!monsterHpFill, !!monsterHpText);
+            
+            if (monsterHpFill) {
+                monsterHpFill.style.width = hpPercent + '%';
+                console.log('HP bar width set to:', monsterHpFill.style.width);
+            } else {
+                console.error('monsterHpFill element not found!');
+            }
+            
+            if (monsterHpText) {
+                monsterHpText.textContent = `${this.currentMonster.hp}/${this.currentMonster.maxHp}`;
+                console.log('HP text set to:', monsterHpText.textContent);
+            } else {
+                console.error('monsterHpText element not found!');
+            }
         }
     }
     
@@ -663,10 +683,56 @@ class GameState {
         console.log('Floating damage shown:', damage, 'Critical:', isCrit);
     }
     
+    updateHeroSprite() {
+        const playerSprite = document.getElementById('player-sprite');
+        if (!playerSprite) return;
+        
+        // Clear any existing content
+        playerSprite.innerHTML = '';
+        
+        // For now, use the knight sprite. Later we'll make this gear-based
+        const spriteTemplate = document.getElementById('knight-sprite');
+        
+        if (spriteTemplate) {
+            // Clone the SVG sprite and add it to the player sprite container
+            const spriteClone = spriteTemplate.cloneNode(true);
+            spriteClone.id = 'knight-sprite-display';
+            spriteClone.style.cursor = 'pointer';
+            spriteClone.style.userSelect = 'none';
+            
+            // Add click event listener for attacking
+            const addClickListeners = (element) => {
+                element.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Hero sprite clicked - attacking!');
+                    this.attack();
+                });
+                
+                // Add to all child elements too
+                Array.from(element.children).forEach(child => {
+                    addClickListeners(child);
+                });
+            };
+            
+            addClickListeners(spriteClone);
+            
+            playerSprite.appendChild(spriteClone);
+            console.log('Hero sprite loaded: Knight');
+        } else {
+            // Fallback to text if sprite not found
+            playerSprite.textContent = 'HERO';
+            console.log('Hero sprite not found, using text fallback');
+        }
+    }
+    
     updatePlayerDisplay() {
         document.getElementById('player-level').textContent = this.player.level;
         document.getElementById('player-hp').textContent = this.player.hp;
         document.getElementById('player-max-hp').textContent = this.player.maxHp;
+        
+        // Update hero sprite
+        this.updateHeroSprite();
         document.getElementById('player-strength').textContent = this.player.strength;
         document.getElementById('player-defense').textContent = this.player.defense;
         document.getElementById('player-gold').textContent = this.player.gold.toLocaleString();

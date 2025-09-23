@@ -93,8 +93,49 @@
 
         <!-- Main game area -->
         <main class="game-main">
+            <!-- World Map -->
+            <section class="world-map active" id="world-map">
+                <h2>World Map</h2>
+                <div class="map-container">
+                    <div class="map-location" data-location="battle">
+                        <div class="location-icon">⚔️</div>
+                        <div class="location-name">Battle Arena</div>
+                        <div class="location-description">Fight monsters and gain experience</div>
+                    </div>
+                    <div class="map-location" data-location="shop">
+                        <div class="location-icon">🏪</div>
+                        <div class="location-name">Equipment Shop</div>
+                        <div class="location-description">Buy weapons, armor, and items</div>
+                    </div>
+                    <div class="map-location" data-location="skills">
+                        <div class="location-icon">⭐</div>
+                        <div class="location-name">Training Grounds</div>
+                        <div class="location-description">Upgrade your abilities</div>
+                    </div>
+                    <div class="map-location" data-location="inventory">
+                        <div class="location-icon">🎒</div>
+                        <div class="location-name">Camp</div>
+                        <div class="location-description">Manage your equipment</div>
+                    </div>
+                    <div class="map-location" data-location="raids">
+                        <div class="location-icon">🏰</div>
+                        <div class="location-name">Raid Dungeons</div>
+                        <div class="location-description">Challenge powerful bosses</div>
+                    </div>
+                    <div class="map-location" data-location="prestige">
+                        <div class="location-icon">🌟</div>
+                        <div class="location-name">Temple of Ascension</div>
+                        <div class="location-description">Transcend your limits</div>
+                    </div>
+                </div>
+                <div class="hero-position">
+                    <div class="hero-sprite">HERO</div>
+                    <div class="current-location">Currently at: <span id="current-location-name">World Map</span></div>
+                </div>
+            </section>
+
             <!-- Combat area -->
-            <section class="combat-area">
+            <section class="location-content" id="battle-area">
                 <div class="side-scroll-container">
                     <div class="dungeon-background">
                         <!-- SVG Background Elements -->
@@ -179,19 +220,11 @@
                     </div>
                 </div>
                 <div class="combat-log" id="combat-log"></div>
+                <div class="location-navigation">
+                    <button class="nav-btn" data-action="back-to-map">← Back to Map</button>
+                </div>
             </section>
 
-            <!-- Tabs for different game sections -->
-            <nav class="game-tabs">
-                <button class="tab-btn active" data-tab="skills">Skills</button>
-                <button class="tab-btn" data-tab="inventory">Inventory</button>
-                <button class="tab-btn" data-tab="shop">Shop</button>
-                <button class="tab-btn" data-tab="raids">Raids</button>
-                <button class="tab-btn" data-tab="achievements">Achievements</button>
-                <button class="tab-btn" data-tab="prestige">Prestige</button>
-                <button class="tab-btn" data-tab="quests">Quests</button>
-                <button class="tab-btn" data-tab="stats">Stats</button>
-            </nav>
 
             <!-- Tab content -->
             <div class="tab-content">

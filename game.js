@@ -143,6 +143,18 @@ class GameState {
         this.lastWeeklyRaidReset = Date.now();
         this.lastMonthlyRaidReset = Date.now();
         
+        // World Map System
+        this.currentLocation = 'world-map';
+        this.locationNames = {
+            'world-map': 'World Map',
+            'battle': 'Battle Arena',
+            'shop': 'Equipment Shop',
+            'skills': 'Training Grounds',
+            'inventory': 'Camp',
+            'raids': 'Raid Dungeons',
+            'prestige': 'Temple of Ascension'
+        };
+        
         // Combat system
         this.lastAutoAttack = 0;
         this.autoAttackInterval = 1000; // 1 second
@@ -290,6 +302,42 @@ class GameState {
                 }
             ]
         };
+    }
+    
+    // World Map Navigation
+    navigateToLocation(locationId) {
+        this.currentLocation = locationId;
+        this.updateLocationDisplay();
+        this.updateCurrentLocationName();
+    }
+    
+    updateLocationDisplay() {
+        // Hide all sections
+        document.getElementById('world-map').classList.remove('active');
+        document.querySelectorAll('.location-content').forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        // Show current location
+        if (this.currentLocation === 'world-map') {
+            document.getElementById('world-map').classList.add('active');
+        } else {
+            const targetSection = document.getElementById(this.currentLocation + '-area');
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+        }
+    }
+    
+    updateCurrentLocationName() {
+        const locationNameElement = document.getElementById('current-location-name');
+        if (locationNameElement) {
+            locationNameElement.textContent = this.locationNames[this.currentLocation] || 'Unknown Location';
+        }
+    }
+    
+    backToMap() {
+        this.navigateToLocation('world-map');
     }
     
     initializeAudio() {
@@ -1362,7 +1410,8 @@ updateQuestTimer() {
             lastQuestReset: this.lastQuestReset,
             lastDailyRaidReset: this.lastDailyRaidReset,
             lastWeeklyRaidReset: this.lastWeeklyRaidReset,
-            lastMonthlyRaidReset: this.lastMonthlyRaidReset
+            lastMonthlyRaidReset: this.lastMonthlyRaidReset,
+            currentLocation: this.currentLocation
         };
         
         localStorage.setItem('idleRpgSave', JSON.stringify(saveData));
@@ -1388,6 +1437,7 @@ updateQuestTimer() {
             this.lastDailyRaidReset = data.lastDailyRaidReset || this.lastDailyRaidReset;
             this.lastWeeklyRaidReset = data.lastWeeklyRaidReset || this.lastWeeklyRaidReset;
             this.lastMonthlyRaidReset = data.lastMonthlyRaidReset || this.lastMonthlyRaidReset;
+            this.currentLocation = data.currentLocation || this.currentLocation;
             
             // Reapply skill effects
             this.player.autoAttack = this.skills['auto-attack'].level > 0;
@@ -1421,6 +1471,8 @@ updateQuestTimer() {
         this.updateRaidsDisplay();
         this.updatePrestigeDisplay();
         this.updateStatsDisplay();
+        this.updateLocationDisplay();
+        this.updateCurrentLocationName();
     }
 }
 
@@ -1579,6 +1631,23 @@ document.addEventListener('DOMContentLoaded', () => {
             game.resetQuests();
         }
     }, 60000);
+    
+    // World Map Navigation
+    document.querySelectorAll('.map-location').forEach(location => {
+        location.addEventListener('click', () => {
+            const locationId = location.dataset.location;
+            game.navigateToLocation(locationId);
+        });
+    });
+    
+    // Back to map navigation
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.dataset.action === 'back-to-map') {
+                game.backToMap();
+            }
+        });
+    });
     
     // Raid category switching
     document.querySelectorAll('.raid-category').forEach(btn => {

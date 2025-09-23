@@ -141,6 +141,7 @@ body::before {
 .world-map {
     display: none;
     padding: 5px;
+    background: transparent;
 }
 
 .world-map.active {
@@ -153,7 +154,7 @@ body::before {
 .world-map-container {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: 350px;
     margin-bottom: 10px;
     border-radius: 10px;
     overflow: hidden;
@@ -161,7 +162,7 @@ body::before {
     box-shadow: 
         inset 0 0 20px rgba(0, 0, 0, 0.4),
         0 0 20px rgba(212, 175, 55, 0.2);
-    flex: 1;
+    flex-shrink: 0;
 }
 
 .map-background {
@@ -171,6 +172,7 @@ body::before {
     background: 
         linear-gradient(135deg, rgba(139, 69, 19, 0.7), rgba(101, 67, 33, 0.7)),
         radial-gradient(circle at center, rgba(160, 82, 45, 0.3), transparent);
+    display: block;
 }
 
 .world-svg {
@@ -180,6 +182,7 @@ body::before {
     width: 100%;
     height: 100%;
     z-index: 1;
+    display: block;
 }
 
 .map-location {
@@ -197,6 +200,7 @@ body::before {
     z-index: 10;
     width: 110px;
     backdrop-filter: blur(2px);
+    display: block;
 }
 
 .map-location:hover {
@@ -266,12 +270,12 @@ body::before {
 
 /* Location Content */
 .location-content {
-    display: none;
+    display: none !important;
     padding: 20px;
 }
 
 .location-content.active {
-    display: block;
+    display: block !important;
 }
 
 .location-navigation {

@@ -433,6 +433,53 @@ body::before {
     filter: drop-shadow(0 6px 12px rgba(255, 107, 107, 0.6));
 }
 
+/* Interactive Arena Floor */
+.arena-floor {
+    transition: all 0.3s ease;
+}
+
+.arena-floor:hover {
+    fill: rgba(139, 69, 19, 0.6) !important;
+    stroke: #d4af37 !important;
+    stroke-width: 3px !important;
+}
+
+.arena-text {
+    pointer-events: none;
+    user-select: none;
+    transition: all 0.3s ease;
+}
+
+.arena-floor:hover + .arena-text {
+    fill: #ffd700 !important;
+    font-weight: bold;
+}
+
+/* Combat Effects */
+.combat-effects {
+    pointer-events: none;
+}
+
+.combat-effects .damage-effect {
+    animation: damageFlash 0.5s ease-out;
+}
+
+.combat-effects .attack-effect {
+    animation: attackSwipe 0.6s ease-out;
+}
+
+@keyframes damageFlash {
+    0% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1.2); }
+    100% { opacity: 0; transform: scale(1); }
+}
+
+@keyframes attackSwipe {
+    0% { transform: translateX(-50px) scaleX(0); opacity: 0; }
+    50% { transform: translateX(0) scaleX(1); opacity: 1; }
+    100% { transform: translateX(50px) scaleX(0); opacity: 0; }
+}
+
 .monster-sprite:hover, .player-sprite:hover {
     transform: scale(1.1);
 }

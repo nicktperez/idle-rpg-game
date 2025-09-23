@@ -323,30 +323,49 @@ class GameState {
     }
     
     setupBattleEventListeners() {
-        const combatArea = document.querySelector('.combat-area');
-        const monsterSprite = document.getElementById('monster-sprite');
+        console.log('Setting up battle event listeners...');
         
-        if (combatArea && !combatArea.hasAttribute('data-listeners-setup')) {
-            combatArea.addEventListener('click', (e) => {
-                if (e.target.closest('.monster-sprite')) {
-                    console.log('Monster clicked - attacking!');
+        // Add click listener to arena floor
+        const arenaFloor = document.getElementById('arena-floor');
+        if (arenaFloor && !arenaFloor.hasAttribute('data-listeners-setup')) {
+            arenaFloor.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Arena floor clicked - attacking!');
+                this.attack();
+            });
+            arenaFloor.setAttribute('data-listeners-setup', 'true');
+            console.log('Arena floor event listener set up');
+        }
+        
+        // Add click listener to the entire dungeon background
+        const dungeonBackground = document.querySelector('.dungeon-background');
+        if (dungeonBackground && !dungeonBackground.hasAttribute('data-listeners-setup')) {
+            dungeonBackground.addEventListener('click', (e) => {
+                // Only trigger if clicking on the arena floor or monster sprite
+                if (e.target.id === 'arena-floor' || e.target.closest('.monster-sprite') || e.target.closest('#monster-sprite')) {
+                    e.preventDefault();
+                    console.log('Combat area clicked - attacking!');
                     this.attack();
                 }
             });
-            combatArea.setAttribute('data-listeners-setup', 'true');
-            console.log('Battle event listeners set up');
+            dungeonBackground.setAttribute('data-listeners-setup', 'true');
+            console.log('Dungeon background event listener set up');
         }
         
-        // Also add direct click listener to monster sprite
+        // Also add direct click listener to monster sprite container
+        const monsterSprite = document.getElementById('monster-sprite');
         if (monsterSprite && !monsterSprite.hasAttribute('data-listeners-setup')) {
             monsterSprite.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('Monster sprite clicked directly - attacking!');
+                e.stopPropagation();
+                console.log('Monster sprite container clicked - attacking!');
                 this.attack();
             });
             monsterSprite.setAttribute('data-listeners-setup', 'true');
-            console.log('Monster sprite event listener set up');
+            console.log('Monster sprite container event listener set up');
         }
+        
+        console.log('All battle event listeners set up');
     }
     
     setupShopEventListeners() {
@@ -487,16 +506,25 @@ class GameState {
                 spriteClone.style.cursor = 'pointer';
                 spriteClone.style.userSelect = 'none';
                 
-                // Add click event listener directly to the SVG
-                spriteClone.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('SVG monster sprite clicked - attacking!');
-                    this.attack();
-                });
+                // Add click event listener directly to the SVG and all its children
+                const addClickListeners = (element) => {
+                    element.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('SVG monster sprite clicked - attacking!', this.currentMonster.name);
+                        this.attack();
+                    });
+                    
+                    // Add to all child elements too
+                    Array.from(element.children).forEach(child => {
+                        addClickListeners(child);
+                    });
+                };
+                
+                addClickListeners(spriteClone);
                 
                 monsterSprite.appendChild(spriteClone);
-                console.log('Monster sprite loaded:', this.currentMonster.name);
+                console.log('Monster sprite loaded:', this.currentMonster.name, 'with click listeners');
             } else {
                 // Fallback to text if sprite not found
                 monsterSprite.textContent = this.currentMonster.sprite || 'MONSTER';
@@ -527,6 +555,37 @@ class GameState {
         return spriteMap[monsterName] || 'goblin-sprite'; // Default to goblin if not found
     }
     
+    showCombatEffects() {
+        const combatEffects = document.getElementById('combat-effects');
+        if (!combatEffects) return;
+        
+        // Clear previous effects
+        combatEffects.innerHTML = '';
+        
+        // Create attack swipe effect
+        const attackSwipe = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        attackSwipe.setAttribute('x1', '200');
+        attackSwipe.setAttribute('y1', '250');
+        attackSwipe.setAttribute('x2', '600');
+        attackSwipe.setAttribute('y2', '250');
+        attackSwipe.setAttribute('stroke', '#ff6b35');
+        attackSwipe.setAttribute('stroke-width', '8');
+        attackSwipe.setAttribute('opacity', '0.8');
+        attackSwipe.setAttribute('class', 'attack-effect');
+        attackSwipe.setAttribute('stroke-linecap', 'round');
+        
+        combatEffects.appendChild(attackSwipe);
+        
+        // Remove effect after animation
+        setTimeout(() => {
+            if (combatEffects.contains(attackSwipe)) {
+                combatEffects.removeChild(attackSwipe);
+            }
+        }, 600);
+        
+        console.log('Combat effects triggered');
+    }
+    
     updatePlayerDisplay() {
         document.getElementById('player-level').textContent = this.player.level;
         document.getElementById('player-hp').textContent = this.player.hp;
@@ -543,6 +602,9 @@ class GameState {
             console.log('No valid monster to attack');
             return;
         }
+        
+        // Add visual combat effects
+        this.showCombatEffects();
         
         const weaponDamage = this.equipment.weapon ? this.equipment.weapon.damage : 0;
         const baseDamage = this.player.strength + weaponDamage;

@@ -433,42 +433,27 @@ body::before {
     filter: drop-shadow(0 6px 12px rgba(255, 107, 107, 0.6));
 }
 
-/* Interactive Arena Floor */
+/* Clean Arena Floor */
 .arena-floor {
     transition: all 0.3s ease;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
 .arena-floor:hover {
-    fill: rgba(139, 69, 19, 0.7) !important;
-    stroke: #ffd700 !important;
-    stroke-width: 4px !important;
-    filter: drop-shadow(0 6px 12px rgba(212, 175, 55, 0.4));
+    fill: rgba(139, 69, 19, 0.5) !important;
+    stroke: #d4af37 !important;
+    stroke-width: 3px !important;
 }
 
 .arena-text {
     pointer-events: none;
     user-select: none;
     transition: all 0.3s ease;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .arena-floor:hover ~ .arena-text {
     fill: #ffd700 !important;
     font-weight: bold;
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
-}
-
-/* Arena Combat Zone */
-.arena-floor:hover ~ rect[stroke-dasharray] {
-    stroke: #ff6b35 !important;
-    stroke-width: 3px !important;
-    opacity: 1 !important;
-}
-
-.arena-floor:hover ~ circle {
-    fill: #ff6b35 !important;
-    opacity: 0.8 !important;
 }
 
 /* Combat Effects */
@@ -2280,19 +2265,19 @@ body::before {
     font-weight: bold;
 }
 
-/* Arena Positioning */
+/* Clean Arena Positioning */
 .arena-monster {
     position: absolute;
-    top: 50%;
-    right: 20%;
+    top: 45%;
+    right: 15%;
     transform: translateY(-50%);
     z-index: 20;
 }
 
 .arena-hero {
     position: absolute;
-    top: 50%;
-    left: 20%;
+    top: 45%;
+    left: 15%;
     transform: translateY(-50%);
     z-index: 20;
 }

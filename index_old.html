@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idle RPG Adventure</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Tutorial Overlay -->
+    <div id="tutorial-overlay" class="tutorial-overlay">
+        <div class="tutorial-modal">
+            <div class="tutorial-header">
+                <h2 id="tutorial-title">Welcome to Idle RPG Adventure!</h2>
+                <button id="tutorial-close" class="tutorial-close">×</button>
+            </div>
+            <div class="tutorial-content">
+                <div id="tutorial-text">Let's learn how to play this awesome idle RPG game!</div>
+                <div class="tutorial-progress">
+                    <div class="progress-bar">
+                        <div id="tutorial-progress-fill" class="progress-fill"></div>
+                    </div>
+                    <span id="tutorial-step">Step 1 of 8</span>
+                </div>
+            </div>
+            <div class="tutorial-controls">
+                <button id="tutorial-prev" class="tutorial-btn" disabled>Previous</button>
+                <button id="tutorial-next" class="tutorial-btn">Next</button>
+                <button id="tutorial-skip" class="tutorial-btn tutorial-skip">Skip Tutorial</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Panel -->
+    <div id="help-panel" class="help-panel">
+        <div class="help-content">
+            <h3>Quick Help</h3>
+            <div class="help-section">
+                <h4>🎮 How to Play:</h4>
+                <ul>
+                    <li><strong>Click monsters</strong> to attack them manually</li>
+                    <li><strong>Buy skills</strong> to unlock auto-attack and bonuses</li>
+                    <li><strong>Purchase equipment</strong> to increase your power</li>
+                    <li><strong>Complete achievements</strong> for permanent rewards</li>
+                </ul>
+            </div>
+            <div class="help-section">
+                <h4>💡 Pro Tips:</h4>
+                <ul>
+                    <li>Auto-attack is essential for idle progression</li>
+                    <li>Critical strike chance multiplies your damage</li>
+                    <li>Gold bonus affects all gold rewards</li>
+                    <li>Health regeneration keeps you fighting longer</li>
+                </ul>
+            </div>
+            <button id="help-close" class="help-close">Got it!</button>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <!-- Header with player stats -->
+        <header class="game-header">
+            <div class="player-stats">
+                <div class="stat">
+                    <span class="stat-icon">LVL</span>
+                    <span id="player-level">1</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">HP</span>
+                    <span id="player-hp">100</span>/<span id="player-max-hp">100</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">STR</span>
+                    <span id="player-strength">10</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">DEF</span>
+                    <span id="player-defense">5</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">GOLD</span>
+                    <span id="player-gold">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">GEMS</span>
+                    <span id="player-gems">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main game area -->
+        <main class="game-main">
+            <!-- World Map -->
+            <section class="world-map active" id="world-map">
+                <h2>World of Eternia</h2>
+                <div class="world-map-container">
+                    <!-- Map Background -->
+                    <div class="map-background">
+                        <svg class="world-svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet">
+                            <!-- Land masses -->
+                            <path d="M 50 150 Q 300 100 600 120 Q 900 140 950 200 Q 950 400 900 550 Q 850 650 600 680 Q 300 690 150 650 Q 50 550 30 400 Q 20 250 50 150 Z" 
+                                  fill="#8B4513" stroke="#654321" stroke-width="4" opacity="0.9"/>
+                            
+                            <!-- Mountains -->
+                            <path d="M 200 250 L 250 180 L 300 250 L 350 200 L 400 250" 
+                                  fill="#696969" stroke="#2F4F4F" stroke-width="3"/>
+                            <path d="M 650 220 L 700 150 L 750 220 L 800 170 L 850 220" 
+                                  fill="#696969" stroke="#2F4F4F" stroke-width="3"/>
+                            
+                            <!-- Rivers -->
+                            <path d="M 150 350 Q 300 330 500 340 Q 700 345 850 360" 
+                                  stroke="#4682B4" stroke-width="6" fill="none"/>
+                            
+                            <!-- Forests -->
+                            <circle cx="300" cy="500" r="40" fill="#228B22" opacity="0.7"/>
+                            <circle cx="330" cy="470" r="35" fill="#228B22" opacity="0.7"/>
+                            <circle cx="270" cy="470" r="30" fill="#228B22" opacity="0.7"/>
+                            
+                            <circle cx="750" cy="450" r="45" fill="#228B22" opacity="0.7"/>
+                            <circle cx="780" cy="420" r="38" fill="#228B22" opacity="0.7"/>
+                            <circle cx="720" cy="420" r="32" fill="#228B22" opacity="0.7"/>
+                            
+                            <!-- Paths between locations -->
+                            <path d="M 200 300 L 350 250" stroke="#D2691E" stroke-width="4" stroke-dasharray="8,8" opacity="0.8"/>
+                            <path d="M 350 250 L 550 200" stroke="#D2691E" stroke-width="4" stroke-dasharray="8,8" opacity="0.8"/>
+                            <path d="M 200 300 L 150 450" stroke="#D2691E" stroke-width="4" stroke-dasharray="8,8" opacity="0.8"/>
+                            <path d="M 350 250 L 450 400" stroke="#D2691E" stroke-width="4" stroke-dasharray="8,8" opacity="0.8"/>
+                            <path d="M 550 200 L 750 300" stroke="#D2691E" stroke-width="4" stroke-dasharray="8,8" opacity="0.8"/>
+                            <path d="M 450 400 L 750 300" stroke="#D2691E" stroke-width="4" stroke-dasharray="8,8" opacity="0.8"/>
+                        </svg>
+                        
+                        <!-- Location Markers positioned on the map -->
+                        <div class="map-location" data-location="battle" style="position: absolute; top: 250px; left: 150px;">
+                            <div class="location-icon">
+                                <svg width="40" height="40" viewBox="0 0 40 40">
+                                    <rect x="15" y="25" width="10" height="15" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+                                    <rect x="5" y="20" width="30" height="8" fill="#C0C0C0" stroke="#808080" stroke-width="2"/>
+                                    <polygon points="20,5 25,15 15,15" fill="#FFD700" stroke="#DAA520" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div class="location-name">Battle Arena</div>
+                            <div class="location-description">Fight monsters</div>
+                        </div>
+                        
+                        <div class="map-location" data-location="shop" style="position: absolute; top: 150px; left: 500px;">
+                            <div class="location-icon">
+                                <svg width="40" height="40" viewBox="0 0 40 40">
+                                    <rect x="5" y="20" width="30" height="20" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+                                    <rect x="8" y="25" width="6" height="10" fill="#FFD700" stroke="#DAA520" stroke-width="1"/>
+                                    <rect x="17" y="25" width="6" height="10" fill="#FFD700" stroke="#DAA520" stroke-width="1"/>
+                                    <rect x="26" y="25" width="6" height="10" fill="#FFD700" stroke="#DAA520" stroke-width="1"/>
+                                    <polygon points="20,5 35,15 5,15" fill="#8B0000" stroke="#654321" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div class="location-name">Equipment Shop</div>
+                            <div class="location-description">Buy gear</div>
+                        </div>
+                        
+                        <div class="map-location" data-location="skills" style="position: absolute; top: 200px; left: 300px;">
+                            <div class="location-icon">
+                                <svg width="40" height="40" viewBox="0 0 40 40">
+                                    <circle cx="20" cy="25" r="15" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+                                    <polygon points="20,10 25,20 15,20" fill="#FFD700" stroke="#DAA520" stroke-width="2"/>
+                                    <polygon points="20,30 25,20 15,20" fill="#FFD700" stroke="#DAA520" stroke-width="2"/>
+                                    <polygon points="10,20 20,15 20,25" fill="#FFD700" stroke="#DAA520" stroke-width="2"/>
+                                    <polygon points="30,20 20,15 20,25" fill="#FFD700" stroke="#DAA520" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div class="location-name">Training Grounds</div>
+                            <div class="location-description">Upgrade skills</div>
+                        </div>
+                        
+                        <div class="map-location" data-location="inventory" style="position: absolute; top: 400px; left: 100px;">
+                            <div class="location-icon">
+                                <svg width="40" height="40" viewBox="0 0 40 40">
+                                    <rect x="8" y="15" width="24" height="20" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+                                    <rect x="12" y="5" width="16" height="15" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+                                    <circle cx="20" cy="12" r="2" fill="#FFD700"/>
+                                    <rect x="15" y="20" width="6" height="10" fill="#654321" stroke="#8B4513" stroke-width="1"/>
+                                </svg>
+                            </div>
+                            <div class="location-name">Camp</div>
+                            <div class="location-description">Manage gear</div>
+                        </div>
+                        
+                        <div class="map-location" data-location="raids" style="position: absolute; top: 250px; left: 700px;">
+                            <div class="location-icon">
+                                <svg width="40" height="40" viewBox="0 0 40 40">
+                                    <rect x="5" y="20" width="30" height="20" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+                                    <rect x="8" y="10" width="24" height="15" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+                                    <rect x="12" y="5" width="16" height="10" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+                                    <polygon points="20,0 30,8 10,8" fill="#8B0000" stroke="#654321" stroke-width="2"/>
+                                    <rect x="18" y="15" width="4" height="8" fill="#FFD700" stroke="#DAA520" stroke-width="1"/>
+                                </svg>
+                            </div>
+                            <div class="location-name">Raid Dungeons</div>
+                            <div class="location-description">Challenge bosses</div>
+                        </div>
+                        
+                        <div class="map-location" data-location="prestige" style="position: absolute; top: 300px; left: 800px;">
+                            <div class="location-icon">
+                                <svg width="40" height="40" viewBox="0 0 40 40">
+                                    <circle cx="20" cy="30" r="12" fill="#8B4513" stroke="#654321" stroke-width="2"/>
+                                    <polygon points="20,5 25,15 30,10 35,20 25,25 20,35 15,25 5,20 10,10 15,15" fill="#FFD700" stroke="#DAA520" stroke-width="2"/>
+                                    <circle cx="20" cy="20" r="3" fill="#FFD700"/>
+                                </svg>
+                            </div>
+                            <div class="location-name">Temple of Ascension</div>
+                            <div class="location-description">Transcend limits</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hero-position">
+                    <div class="hero-sprite">HERO</div>
+                    <div class="current-location">Currently at: <span id="current-location-name">World Map</span></div>
+                </div>
+            </section>
+
+            <!-- Combat area -->
+            <section class="location-content" id="battle-area">
+                <div class="side-scroll-container">
+                    <div class="dungeon-background">
+                        <!-- SVG Background Elements -->
+                        <svg class="dungeon-svg" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet">
+                            <!-- Dungeon Floor -->
+                            <rect x="0" y="250" width="800" height="50" fill="#4a3728" stroke="#8b4513" stroke-width="2"/>
+                            <!-- Stone Bricks Pattern -->
+                            <defs>
+                                <pattern id="brickPattern" x="0" y="0" width="80" height="40" patternUnits="userSpaceOnUse">
+                                    <rect width="80" height="40" fill="#654321"/>
+                                    <rect x="0" y="0" width="80" height="2" fill="#8b4513"/>
+                                    <rect x="0" y="38" width="80" height="2" fill="#8b4513"/>
+                                    <rect x="0" y="0" width="2" height="40" fill="#8b4513"/>
+                                    <rect x="78" y="0" width="2" height="40" fill="#8b4513"/>
+                                    <rect x="40" y="20" width="2" height="20" fill="#8b4513"/>
+                                </pattern>
+                                <pattern id="wallPattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+                                    <rect width="100" height="100" fill="#2c1810"/>
+                                    <circle cx="20" cy="20" r="3" fill="#8b4513" opacity="0.3"/>
+                                    <circle cx="80" cy="30" r="2" fill="#8b4513" opacity="0.2"/>
+                                    <circle cx="50" cy="70" r="4" fill="#8b4513" opacity="0.4"/>
+                                    <circle cx="90" cy="80" r="2" fill="#8b4513" opacity="0.3"/>
+                                </pattern>
+                            </defs>
+                            
+                            <!-- Dungeon Walls -->
+                            <rect x="0" y="0" width="800" height="250" fill="url(#wallPattern)"/>
+                            
+                            <!-- Torches -->
+                            <g class="torches">
+                                <g transform="translate(100, 180)">
+                                    <rect x="-2" y="0" width="4" height="60" fill="#8b4513"/>
+                                    <circle cx="0" cy="20" r="15" fill="#ff6347" opacity="0.8">
+                                        <animate attributeName="r" values="15;18;15" dur="2s" repeatCount="indefinite"/>
+                                        <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+                                    </circle>
+                                    <circle cx="0" cy="20" r="8" fill="#ffd700" opacity="0.9">
+                                        <animate attributeName="r" values="8;10;8" dur="1.5s" repeatCount="indefinite"/>
+                                    </circle>
+                                </g>
+                                <g transform="translate(700, 180)">
+                                    <rect x="-2" y="0" width="4" height="60" fill="#8b4513"/>
+                                    <circle cx="0" cy="20" r="15" fill="#ff6347" opacity="0.8">
+                                        <animate attributeName="r" values="15;18;15" dur="2s" repeatCount="indefinite"/>
+                                        <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+                                    </circle>
+                                    <circle cx="0" cy="20" r="8" fill="#ffd700" opacity="0.9">
+                                        <animate attributeName="r" values="8;10;8" dur="1.5s" repeatCount="indefinite"/>
+                                    </circle>
+                                </g>
+                            </g>
+                            
+                            <!-- Cobwebs -->
+                            <g class="cobwebs" opacity="0.6">
+                                <path d="M 200 100 Q 210 80 220 100 Q 230 120 220 100 Q 210 80 200 100" stroke="#8b4513" stroke-width="1" fill="none"/>
+                                <path d="M 600 120 Q 610 100 620 120 Q 630 140 620 120 Q 610 100 600 120" stroke="#8b4513" stroke-width="1" fill="none"/>
+                            </g>
+                            
+                            <!-- Chains -->
+                            <g class="chains" stroke="#654321" stroke-width="3" fill="none">
+                                <path d="M 150 50 Q 150 100 150 150"/>
+                                <path d="M 650 50 Q 650 100 650 150"/>
+                            </g>
+                        </svg>
+                        
+                        <!-- Combat Sprites -->
+                        <div class="monster-display">
+                            <div class="monster-sprite" id="monster-sprite">DRAGON</div>
+                            <div class="monster-info">
+                                <h3 id="monster-name">Baby Dragon</h3>
+                                <div class="monster-stats">
+                                    <div class="monster-hp-bar">
+                                        <div class="hp-fill" id="monster-hp-fill"></div>
+                                        <span class="hp-text" id="monster-hp-text">50/50</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="player-display">
+                            <div class="player-sprite" id="player-sprite">HERO</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="combat-log" id="combat-log"></div>
+                <div class="location-navigation">
+                    <button class="nav-btn" data-action="back-to-map">← Back to Map</button>
+                </div>
+            </section>
+
+
+                            <div class="skill-node" data-skill="crit-chance">
+                                <div class="skill-icon">🎯</div>
+                                <div class="skill-name">Critical Strike</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">250</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="double-strike">
+                                <div class="skill-icon">⚡</div>
+                                <div class="skill-name">Double Strike</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">500</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="berserker">
+                                <div class="skill-icon">🔥</div>
+                                <div class="skill-name">Berserker</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">1000</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="executioner">
+                                <div class="skill-icon">💀</div>
+                                <div class="skill-name">Executioner</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">2000</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="devastation">
+                                <div class="skill-icon">💥</div>
+                                <div class="skill-name">Devastation</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">5000</span> GOLD</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="upgrade-category" id="economy-upgrades">
+                        <div class="skill-tree">
+                            <div class="skill-node" data-skill="gold-bonus">
+                                <div class="skill-icon">💰</div>
+                                <div class="skill-name">Gold Rush</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">300</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="treasure-hunter">
+                                <div class="skill-icon">🗝️</div>
+                                <div class="skill-name">Treasure Hunter</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">800</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="merchant">
+                                <div class="skill-icon">🏪</div>
+                                <div class="skill-name">Merchant</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">1500</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="golden-touch">
+                                <div class="skill-icon">✨</div>
+                                <div class="skill-name">Golden Touch</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">3000</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="philosophers-stone">
+                                <div class="skill-icon">🔮</div>
+                                <div class="skill-name">Philosopher's Stone</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">8000</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="midas-touch">
+                                <div class="skill-icon">👑</div>
+                                <div class="skill-name">Midas Touch</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">20000</span> GOLD</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="upgrade-category" id="utility-upgrades">
+                        <div class="skill-tree">
+                            <div class="skill-node" data-skill="health-regen">
+                                <div class="skill-icon">💚</div>
+                                <div class="skill-name">Regeneration</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">200</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="vitality">
+                                <div class="skill-icon">❤️</div>
+                                <div class="skill-name">Vitality</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">600</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="swiftness">
+                                <div class="skill-icon">💨</div>
+                                <div class="skill-name">Swiftness</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">1200</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="fortitude">
+                                <div class="skill-icon">🛡️</div>
+                                <div class="skill-name">Fortitude</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">2500</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="immortality">
+                                <div class="skill-icon">☠️</div>
+                                <div class="skill-name">Immortality</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">10000</span> GOLD</div>
+                            </div>
+                            <div class="skill-node" data-skill="transcendence">
+                                <div class="skill-icon">🌟</div>
+                                <div class="skill-name">Transcendence</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">50000</span> GOLD</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="upgrade-category" id="prestige-upgrades">
+                        <div class="skill-tree">
+                            <div class="skill-node" data-skill="prestige-power">
+                                <div class="skill-icon">⭐</div>
+                                <div class="skill-name">Prestige Power</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">100</span> GEMS</div>
+                            </div>
+                            <div class="skill-node" data-skill="eternal-wisdom">
+                                <div class="skill-icon">📚</div>
+                                <div class="skill-name">Eternal Wisdom</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">250</span> GEMS</div>
+                            </div>
+                            <div class="skill-node" data-skill="cosmic-force">
+                                <div class="skill-icon">🌌</div>
+                                <div class="skill-name">Cosmic Force</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">500</span> GEMS</div>
+                            </div>
+                            <div class="skill-node" data-skill="divine-blessing">
+                                <div class="skill-icon">🙏</div>
+                                <div class="skill-name">Divine Blessing</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">1000</span> GEMS</div>
+                            </div>
+                            <div class="skill-node" data-skill="reality-bender">
+                                <div class="skill-icon">🌀</div>
+                                <div class="skill-name">Reality Bender</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">2500</span> GEMS</div>
+                            </div>
+                            <div class="skill-node" data-skill="omnipotence">
+                                <div class="skill-icon">♾️</div>
+                                <div class="skill-name">Omnipotence</div>
+                                <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                                <div class="skill-cost">Cost: <span class="skill-cost-num">10000</span> GEMS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory tab -->
+                <div class="tab-panel" id="inventory-panel">
+                    <h2>Inventory</h2>
+                    <div class="equipment-slots">
+                        <div class="equipment-slot" data-slot="weapon">
+                            <div class="slot-icon">WEAPON</div>
+                            <div class="item-name">Rusty Sword</div>
+                        </div>
+                        <div class="equipment-slot" data-slot="armor">
+                            <div class="slot-icon">ARMOR</div>
+                            <div class="item-name">Cloth Armor</div>
+                        </div>
+                        <div class="equipment-slot" data-slot="accessory">
+                            <div class="slot-icon">RING</div>
+                            <div class="item-name">None</div>
+                        </div>
+                    </div>
+                    <div class="inventory-grid" id="inventory-grid">
+                        <!-- Inventory items will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Shop tab -->
+                <div class="tab-panel" id="shop-panel">
+                    <h2>Equipment Shop</h2>
+                    <div class="shop-categories">
+                        <button class="shop-category active" data-category="weapons">Weapons</button>
+                        <button class="shop-category" data-category="armor">Armor</button>
+                        <button class="shop-category" data-category="accessories">Accessories</button>
+                        <button class="shop-category" data-category="consumables">Consumables</button>
+                    </div>
+                    
+                    <!-- Weapons Shop -->
+                    <div class="shop-category-content active" id="weapons-shop">
+                        <div class="shop-item">
+                            <div class="item-icon">⚔️</div>
+                            <div class="item-info">
+                                <h4>Iron Sword</h4>
+                                <p>+15 Damage</p>
+                                <p class="item-price">500 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="iron-sword" data-price="500">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🗡️</div>
+                            <div class="item-info">
+                                <h4>Steel Blade</h4>
+                                <p>+25 Damage</p>
+                                <p class="item-price">1,200 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="steel-blade" data-price="1200">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">⚡</div>
+                            <div class="item-info">
+                                <h4>Lightning Blade</h4>
+                                <p>+40 Damage</p>
+                                <p class="item-price">2,500 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="lightning-blade" data-price="2500">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🔥</div>
+                            <div class="item-info">
+                                <h4>Fire Sword</h4>
+                                <p>+60 Damage</p>
+                                <p class="item-price">5,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="fire-sword" data-price="5000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">❄️</div>
+                            <div class="item-info">
+                                <h4>Ice Blade</h4>
+                                <p>+80 Damage</p>
+                                <p class="item-price">8,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="ice-blade" data-price="8000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">💎</div>
+                            <div class="item-info">
+                                <h4>Diamond Sword</h4>
+                                <p>+120 Damage</p>
+                                <p class="item-price">15,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="diamond-sword" data-price="15000">Buy</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Armor Shop -->
+                    <div class="shop-category-content" id="armor-shop">
+                        <div class="shop-item">
+                            <div class="item-icon">🛡️</div>
+                            <div class="item-info">
+                                <h4>Leather Armor</h4>
+                                <p>+8 Defense</p>
+                                <p class="item-price">300 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="leather-armor" data-price="300">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🔰</div>
+                            <div class="item-info">
+                                <h4>Chain Mail</h4>
+                                <p>+15 Defense</p>
+                                <p class="item-price">800 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="chain-mail" data-price="800">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🛡️</div>
+                            <div class="item-info">
+                                <h4>Plate Armor</h4>
+                                <p>+25 Defense</p>
+                                <p class="item-price">2,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="plate-armor" data-price="2000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🐲</div>
+                            <div class="item-info">
+                                <h4>Dragon Scale Armor</h4>
+                                <p>+40 Defense</p>
+                                <p class="item-price">5,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="dragon-scale-armor" data-price="5000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🌟</div>
+                            <div class="item-info">
+                                <h4>Mystic Armor</h4>
+                                <p>+65 Defense</p>
+                                <p class="item-price">12,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="mystic-armor" data-price="12000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">👑</div>
+                            <div class="item-info">
+                                <h4>Royal Armor</h4>
+                                <p>+100 Defense</p>
+                                <p class="item-price">25,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="royal-armor" data-price="25000">Buy</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Accessories Shop -->
+                    <div class="shop-category-content" id="accessories-shop">
+                        <div class="shop-item">
+                            <div class="item-icon">💍</div>
+                            <div class="item-info">
+                                <h4>Power Ring</h4>
+                                <p>+5 Damage, +5 Defense</p>
+                                <p class="item-price">1,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="power-ring" data-price="1000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🔮</div>
+                            <div class="item-info">
+                                <h4>Magic Amulet</h4>
+                                <p>+10 Damage, +10 Defense</p>
+                                <p class="item-price">2,500 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="magic-amulet" data-price="2500">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">⚡</div>
+                            <div class="item-info">
+                                <h4>Lightning Pendant</h4>
+                                <p>+20 Damage</p>
+                                <p class="item-price">4,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="lightning-pendant" data-price="4000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🛡️</div>
+                            <div class="item-info">
+                                <h4>Guardian Bracelet</h4>
+                                <p>+20 Defense</p>
+                                <p class="item-price">4,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="guardian-bracelet" data-price="4000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">💎</div>
+                            <div class="item-info">
+                                <h4>Crown of Power</h4>
+                                <p>+30 Damage, +30 Defense</p>
+                                <p class="item-price">10,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="crown-of-power" data-price="10000">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🌟</div>
+                            <div class="item-info">
+                                <h4>Infinity Stone</h4>
+                                <p>+50 Damage, +50 Defense</p>
+                                <p class="item-price">50,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="infinity-stone" data-price="50000">Buy</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Consumables Shop -->
+                    <div class="shop-category-content" id="consumables-shop">
+                        <div class="shop-item">
+                            <div class="item-icon">🧪</div>
+                            <div class="item-info">
+                                <h4>Health Potion</h4>
+                                <p>Restore 50 HP</p>
+                                <p class="item-price">100 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="health-potion" data-price="100">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">💚</div>
+                            <div class="item-info">
+                                <h4>Greater Health Potion</h4>
+                                <p>Restore 100 HP</p>
+                                <p class="item-price">200 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="greater-health-potion" data-price="200">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">⚡</div>
+                            <div class="item-info">
+                                <h4>Damage Boost</h4>
+                                <p>+25% Damage for 10 minutes</p>
+                                <p class="item-price">500 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="damage-boost" data-price="500">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">🛡️</div>
+                            <div class="item-info">
+                                <h4>Defense Boost</h4>
+                                <p>+25% Defense for 10 minutes</p>
+                                <p class="item-price">500 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="defense-boost" data-price="500">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">💰</div>
+                            <div class="item-info">
+                                <h4>Gold Boost</h4>
+                                <p>+50% Gold for 10 minutes</p>
+                                <p class="item-price">750 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="gold-boost" data-price="750">Buy</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-icon">⭐</div>
+                            <div class="item-info">
+                                <h4>EXP Boost</h4>
+                                <p>+100% EXP for 10 minutes</p>
+                                <p class="item-price">1,000 Gold</p>
+                            </div>
+                            <button class="buy-btn" data-item="exp-boost" data-price="1000">Buy</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Raids tab -->
+                <div class="tab-panel" id="raids-panel">
+                    <h2>Raid System</h2>
+                    <div class="raid-categories">
+                        <button class="raid-category active" data-raid-type="daily">Daily Raids</button>
+                        <button class="raid-category" data-raid-type="weekly">Weekly Raids</button>
+                        <button class="raid-category" data-raid-type="monthly">Monthly Raids</button>
+                    </div>
+                    
+                    <!-- Daily Raids -->
+                    <div class="raid-content" id="daily-raids">
+                        <div class="raid-timer">
+                            <h3>Next Daily Reset: <span id="daily-raid-timer">23:45:12</span></h3>
+                        </div>
+                        <div class="raid-list" id="daily-raid-list">
+                            <!-- Daily raids will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Weekly Raids -->
+                    <div class="raid-content" id="weekly-raids" style="display: none;">
+                        <div class="raid-timer">
+                            <h3>Next Weekly Reset: <span id="weekly-raid-timer">6d 23:45:12</span></h3>
+                        </div>
+                        <div class="raid-list" id="weekly-raid-list">
+                            <!-- Weekly raids will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Monthly Raids -->
+                    <div class="raid-content" id="monthly-raids" style="display: none;">
+                        <div class="raid-timer">
+                            <h3>Next Monthly Reset: <span id="monthly-raid-timer">29d 23:45:12</span></h3>
+                        </div>
+                        <div class="raid-list" id="monthly-raid-list">
+                            <!-- Monthly raids will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievements tab -->
+                <div class="tab-panel" id="achievements-panel">
+                    <h2>Achievements</h2>
+                    <div class="achievements-list" id="achievements-list">
+                        <!-- Achievements will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Prestige tab -->
+                <div class="tab-panel" id="prestige-panel">
+                    <h2>Prestige System</h2>
+                    <div class="prestige-info">
+                        <div class="prestige-description">
+                            <p>Prestige allows you to reset your progress for permanent bonuses!</p>
+                            <div class="prestige-requirements">
+                                <h3>Requirements:</h3>
+                                <ul>
+                                    <li>Reach Level 50</li>
+                                    <li>Have 10,000 Gold</li>
+                                    <li>Unlock 3 Achievements</li>
+                                </ul>
+                            </div>
+                            <div class="prestige-benefits">
+                                <h3>Prestige Benefits:</h3>
+                                <ul>
+                                    <li>+50% Gold Gain (Permanent)</li>
+                                    <li>+25% Experience Gain (Permanent)</li>
+                                    <li>Unlock Prestige Skills</li>
+                                    <li>Access to Higher Tier Equipment</li>
+                                </ul>
+                            </div>
+                            <button id="prestige-btn" class="prestige-btn" disabled>Prestige Not Available</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quests tab -->
+                <div class="tab-panel" id="quests-panel">
+                    <h2>Daily Quests</h2>
+                    <div class="quest-timer">
+                        <h3>Next Quest Reset: <span id="quest-timer">23:45:12</span></h3>
+                    </div>
+                    <div class="quests-list" id="quests-list">
+                        <!-- Quests will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Stats tab -->
+                <div class="tab-panel" id="stats-panel">
+                    <h2>Game Statistics</h2>
+                    <div class="stats-grid">
+                        <div class="stat-category">
+                            <h3>Combat Stats</h3>
+                            <div class="stat-item">
+                                <span class="stat-label">Monsters Defeated:</span>
+                                <span id="stat-monsters-defeated">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Total Damage Dealt:</span>
+                                <span id="stat-damage-dealt">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Critical Hits:</span>
+                                <span id="stat-crit-hits">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Highest Damage:</span>
+                                <span id="stat-highest-damage">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-category">
+                            <h3>Economy Stats</h3>
+                            <div class="stat-item">
+                                <span class="stat-label">Total Gold Earned:</span>
+                                <span id="stat-gold-earned">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Gold Spent:</span>
+                                <span id="stat-gold-spent">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Items Purchased:</span>
+                                <span id="stat-items-purchased">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Skills Upgraded:</span>
+                                <span id="stat-skills-upgraded">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-category">
+                            <h3>Time Stats</h3>
+                            <div class="stat-item">
+                                <span class="stat-label">Time Played:</span>
+                                <span id="stat-time-played">0s</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Game Started:</span>
+                                <span id="stat-game-started">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Achievements Unlocked:</span>
+                                <span id="stat-achievements">0/12</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Current Prestige Level:</span>
+                                <span id="stat-prestige-level">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Floating damage numbers -->
+        <div id="damage-numbers"></div>
+
+        <!-- Particle effects -->
+        <div id="particles"></div>
+
+        <!-- Help and Save controls -->
+        <div class="save-controls">
+            <button id="help-btn" class="help-btn">❓ Help</button>
+            <button id="tutorial-btn" class="tutorial-btn">📚 Tutorial</button>
+            <button id="save-btn">💾 Save</button>
+            <button id="load-btn">📁 Load</button>
+            <button id="reset-btn">🔄 Reset</button>
+        </div>
+    </div>
+
+    <!-- Location Content Sections -->
+    
+    <!-- Shop Area -->
+    <section class="location-content" id="shop-area">
+        <h2>Equipment Shop</h2>
+        <div class="shop-categories">
+            <button class="shop-category active" data-category="weapons">Weapons</button>
+            <button class="shop-category" data-category="armor">Armor</button>
+            <button class="shop-category" data-category="accessories">Accessories</button>
+            <button class="shop-category" data-category="consumables">Consumables</button>
+        </div>
+        
+        <!-- Weapons Shop -->
+        <div class="shop-category-content active" id="weapons-shop">
+            <div class="shop-item">
+                <div class="item-icon">⚔️</div>
+                <div class="item-info">
+                    <h4>Iron Sword</h4>
+                    <p>+15 Damage</p>
+                    <p class="item-price">500 Gold</p>
+                </div>
+                <button class="buy-btn" data-item="iron-sword" data-price="500">Buy</button>
+            </div>
+            <div class="shop-item">
+                <div class="item-icon">🗡️</div>
+                <div class="item-info">
+                    <h4>Steel Blade</h4>
+                    <p>+25 Damage</p>
+                    <p class="item-price">1,200 Gold</p>
+                </div>
+                <button class="buy-btn" data-item="steel-blade" data-price="1200">Buy</button>
+            </div>
+            <div class="shop-item">
+                <div class="item-icon">⚡</div>
+                <div class="item-info">
+                    <h4>Lightning Blade</h4>
+                    <p>+40 Damage</p>
+                    <p class="item-price">2,500 Gold</p>
+                </div>
+                <button class="buy-btn" data-item="lightning-blade" data-price="2500">Buy</button>
+            </div>
+        </div>
+        
+        <!-- Armor Shop -->
+        <div class="shop-category-content" id="armor-shop">
+            <div class="shop-item">
+                <div class="item-icon">🛡️</div>
+                <div class="item-info">
+                    <h4>Leather Armor</h4>
+                    <p>+8 Defense</p>
+                    <p class="item-price">300 Gold</p>
+                </div>
+                <button class="buy-btn" data-item="leather-armor" data-price="300">Buy</button>
+            </div>
+            <div class="shop-item">
+                <div class="item-icon">🔰</div>
+                <div class="item-info">
+                    <h4>Chain Mail</h4>
+                    <p>+15 Defense</p>
+                    <p class="item-price">800 Gold</p>
+                </div>
+                <button class="buy-btn" data-item="chain-mail" data-price="800">Buy</button>
+            </div>
+        </div>
+        
+        <!-- Accessories Shop -->
+        <div class="shop-category-content" id="accessories-shop">
+            <div class="shop-item">
+                <div class="item-icon">💍</div>
+                <div class="item-info">
+                    <h4>Power Ring</h4>
+                    <p>+5 Damage, +5 Defense</p>
+                    <p class="item-price">1,000 Gold</p>
+                </div>
+                <button class="buy-btn" data-item="power-ring" data-price="1000">Buy</button>
+            </div>
+        </div>
+        
+        <!-- Consumables Shop -->
+        <div class="shop-category-content" id="consumables-shop">
+            <div class="shop-item">
+                <div class="item-icon">🧪</div>
+                <div class="item-info">
+                    <h4>Health Potion</h4>
+                    <p>Restore 50 HP</p>
+                    <p class="item-price">100 Gold</p>
+                </div>
+                <button class="buy-btn" data-item="health-potion" data-price="100">Buy</button>
+            </div>
+        </div>
+        
+        <div class="location-navigation">
+            <button class="nav-btn" data-action="back-to-map">← Back to Map</button>
+        </div>
+    </section>
+
+    <!-- Skills Area -->
+    <section class="location-content" id="skills-area">
+        <h2>Training Grounds</h2>
+        <div class="upgrade-tabs">
+            <button class="upgrade-tab active" data-category="combat">Combat</button>
+            <button class="upgrade-tab" data-category="economy">Economy</button>
+            <button class="upgrade-tab" data-category="utility">Utility</button>
+            <button class="upgrade-tab" data-category="prestige">Prestige</button>
+        </div>
+        
+        <div class="upgrade-category active" id="combat-upgrades">
+            <div class="skill-tree">
+                <div class="skill-node" data-skill="auto-attack">
+                    <div class="skill-icon">⚔️</div>
+                    <div class="skill-name">Auto Attack</div>
+                    <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                    <div class="skill-cost">Cost: <span class="skill-cost-num">100</span> GOLD</div>
+                </div>
+                <div class="skill-node" data-skill="crit-chance">
+                    <div class="skill-icon">🎯</div>
+                    <div class="skill-name">Critical Strike</div>
+                    <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                    <div class="skill-cost">Cost: <span class="skill-cost-num">250</span> GOLD</div>
+                </div>
+                <div class="skill-node" data-skill="double-strike">
+                    <div class="skill-icon">⚡</div>
+                    <div class="skill-name">Double Strike</div>
+                    <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                    <div class="skill-cost">Cost: <span class="skill-cost-num">500</span> GOLD</div>
+                </div>
+                <div class="skill-node" data-skill="berserker">
+                    <div class="skill-icon">🔥</div>
+                    <div class="skill-name">Berserker</div>
+                    <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                    <div class="skill-cost">Cost: <span class="skill-cost-num">1000</span> GOLD</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="upgrade-category" id="economy-upgrades">
+            <div class="skill-tree">
+                <div class="skill-node" data-skill="gold-bonus">
+                    <div class="skill-icon">💰</div>
+                    <div class="skill-name">Gold Rush</div>
+                    <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                    <div class="skill-cost">Cost: <span class="skill-cost-num">300</span> GOLD</div>
+                </div>
+                <div class="skill-node" data-skill="treasure-hunter">
+                    <div class="skill-icon">🗝️</div>
+                    <div class="skill-name">Treasure Hunter</div>
+                    <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                    <div class="skill-cost">Cost: <span class="skill-cost-num">800</span> GOLD</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="upgrade-category" id="utility-upgrades">
+            <div class="skill-tree">
+                <div class="skill-node" data-skill="health-regen">
+                    <div class="skill-icon">💚</div>
+                    <div class="skill-name">Regeneration</div>
+                    <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                    <div class="skill-cost">Cost: <span class="skill-cost-num">200</span> GOLD</div>
+                </div>
+                <div class="skill-node" data-skill="vitality">
+                    <div class="skill-icon">❤️</div>
+                    <div class="skill-name">Vitality</div>
+                    <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                    <div class="skill-cost">Cost: <span class="skill-cost-num">600</span> GOLD</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="upgrade-category" id="prestige-upgrades">
+            <div class="skill-tree">
+                <div class="skill-node" data-skill="prestige-power">
+                    <div class="skill-icon">⭐</div>
+                    <div class="skill-name">Prestige Power</div>
+                    <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                    <div class="skill-cost">Cost: <span class="skill-cost-num">100</span> GEMS</div>
+                </div>
+                <div class="skill-node" data-skill="eternal-wisdom">
+                    <div class="skill-icon">📚</div>
+                    <div class="skill-name">Eternal Wisdom</div>
+                    <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                    <div class="skill-cost">Cost: <span class="skill-cost-num">250</span> GEMS</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="location-navigation">
+            <button class="nav-btn" data-action="back-to-map">← Back to Map</button>
+        </div>
+    </section>
+
+    <!-- Inventory Area -->
+    <section class="location-content" id="inventory-area">
+        <h2>Camp - Equipment Management</h2>
+        <div class="equipment-slots">
+            <div class="equipment-slot" data-slot="weapon">
+                <div class="slot-icon">WEAPON</div>
+                <div class="item-name">Rusty Sword</div>
+            </div>
+            <div class="equipment-slot" data-slot="armor">
+                <div class="slot-icon">ARMOR</div>
+                <div class="item-name">Cloth Armor</div>
+            </div>
+            <div class="equipment-slot" data-slot="accessory">
+                <div class="slot-icon">RING</div>
+                <div class="item-name">None</div>
+            </div>
+        </div>
+        <div class="inventory-grid" id="inventory-grid">
+            <!-- Inventory items will be populated here -->
+        </div>
+        <div class="location-navigation">
+            <button class="nav-btn" data-action="back-to-map">← Back to Map</button>
+        </div>
+    </section>
+
+    <!-- Raids Area -->
+    <section class="location-content" id="raids-area">
+        <h2>Raid Dungeons</h2>
+        <div class="raid-categories">
+            <button class="raid-category active" data-raid-type="daily">Daily Raids</button>
+            <button class="raid-category" data-raid-type="weekly">Weekly Raids</button>
+            <button class="raid-category" data-raid-type="monthly">Monthly Raids</button>
+        </div>
+        
+        <!-- Daily Raids -->
+        <div class="raid-content" id="daily-raids">
+            <div class="raid-timer">
+                <h3>Next Daily Reset: <span id="daily-raid-timer">23:45:12</span></h3>
+            </div>
+            <div class="raid-list" id="daily-raid-list">
+                <!-- Daily raids will be populated here -->
+            </div>
+        </div>
+        
+        <div class="location-navigation">
+            <button class="nav-btn" data-action="back-to-map">← Back to Map</button>
+        </div>
+    </section>
+
+    <!-- Prestige Area -->
+    <section class="location-content" id="prestige-area">
+        <h2>Temple of Ascension</h2>
+        <div class="prestige-info">
+            <div class="prestige-stats">
+                <div class="prestige-stat">
+                    <span class="stat-label">Current Prestige Level:</span>
+                    <span class="stat-value" id="prestige-level">0</span>
+                </div>
+                <div class="prestige-stat">
+                    <span class="stat-label">Gems Earned:</span>
+                    <span class="stat-value" id="total-gems">0</span>
+                </div>
+                <div class="prestige-stat">
+                    <span class="stat-label">Gold Bonus:</span>
+                    <span class="stat-value" id="prestige-gold-bonus">+0%</span>
+                </div>
+                <div class="prestige-stat">
+                    <span class="stat-label">EXP Bonus:</span>
+                    <span class="stat-value" id="prestige-exp-bonus">+0%</span>
+                </div>
+            </div>
+            
+            <div class="prestige-requirements">
+                <h3>Prestige Requirements</h3>
+                <div class="requirement">
+                    <span class="requirement-label">Level:</span>
+                    <span class="requirement-value" id="prestige-level-req">25</span>
+                </div>
+                <div class="requirement">
+                    <span class="requirement-label">Gold:</span>
+                    <span class="requirement-value" id="prestige-gold-req">100,000</span>
+                </div>
+            </div>
+            
+            <button class="prestige-btn" id="prestige-btn" disabled>Prestige (Reset Progress)</button>
+        </div>
+        <div class="location-navigation">
+            <button class="nav-btn" data-action="back-to-map">← Back to Map</button>
+        </div>
+    </section>
+
+    <script src="game.js"></script>
+</body>
+</html>
+

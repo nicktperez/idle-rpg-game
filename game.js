@@ -473,13 +473,58 @@ class GameState {
         const monsterHpText = document.getElementById('monster-hp-text');
         
         if (this.currentMonster) {
-            monsterSprite.textContent = this.currentMonster.sprite;
+            // Clear any existing content
+            monsterSprite.innerHTML = '';
+            
+            // Get the appropriate SVG sprite based on monster type
+            const spriteId = this.getMonsterSpriteId(this.currentMonster.name);
+            const spriteTemplate = document.getElementById(spriteId);
+            
+            if (spriteTemplate) {
+                // Clone the SVG sprite and add it to the monster sprite container
+                const spriteClone = spriteTemplate.cloneNode(true);
+                spriteClone.id = spriteId + '-display';
+                spriteClone.style.cursor = 'pointer';
+                spriteClone.style.userSelect = 'none';
+                
+                // Add click event listener directly to the SVG
+                spriteClone.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('SVG monster sprite clicked - attacking!');
+                    this.attack();
+                });
+                
+                monsterSprite.appendChild(spriteClone);
+                console.log('Monster sprite loaded:', this.currentMonster.name);
+            } else {
+                // Fallback to text if sprite not found
+                monsterSprite.textContent = this.currentMonster.sprite || 'MONSTER';
+                console.log('Sprite not found, using text fallback');
+            }
+            
             monsterName.textContent = this.currentMonster.name;
             
             const hpPercent = (this.currentMonster.hp / this.currentMonster.maxHp) * 100;
             monsterHpFill.style.width = hpPercent + '%';
             monsterHpText.textContent = `${this.currentMonster.hp}/${this.currentMonster.maxHp}`;
         }
+    }
+    
+    getMonsterSpriteId(monsterName) {
+        // Map monster names to sprite IDs
+        const spriteMap = {
+            'Baby Dragon': 'dragon-sprite',
+            'Goblin': 'goblin-sprite',
+            'Orc': 'orc-sprite',
+            'Skeleton': 'skeleton-sprite',
+            'Dark Mage': 'mage-sprite',
+            'Giant Spider': 'spider-sprite',
+            'Minotaur': 'minotaur-sprite',
+            'Phoenix': 'phoenix-sprite'
+        };
+        
+        return spriteMap[monsterName] || 'goblin-sprite'; // Default to goblin if not found
     }
     
     updatePlayerDisplay() {

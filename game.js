@@ -324,14 +324,28 @@ class GameState {
     
     setupBattleEventListeners() {
         const combatArea = document.querySelector('.combat-area');
+        const monsterSprite = document.getElementById('monster-sprite');
+        
         if (combatArea && !combatArea.hasAttribute('data-listeners-setup')) {
             combatArea.addEventListener('click', (e) => {
                 if (e.target.closest('.monster-sprite')) {
+                    console.log('Monster clicked - attacking!');
                     this.attack();
                 }
             });
             combatArea.setAttribute('data-listeners-setup', 'true');
             console.log('Battle event listeners set up');
+        }
+        
+        // Also add direct click listener to monster sprite
+        if (monsterSprite && !monsterSprite.hasAttribute('data-listeners-setup')) {
+            monsterSprite.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Monster sprite clicked directly - attacking!');
+                this.attack();
+            });
+            monsterSprite.setAttribute('data-listeners-setup', 'true');
+            console.log('Monster sprite event listener set up');
         }
     }
     
@@ -448,6 +462,7 @@ class GameState {
         };
         
         this.currentMonster.hp = this.currentMonster.maxHp;
+        console.log('Monster spawned:', this.currentMonster);
         this.updateMonsterDisplay();
     }
     
@@ -478,7 +493,11 @@ class GameState {
     }
     
     attack() {
-        if (!this.currentMonster || this.currentMonster.hp <= 0) return;
+        console.log('Attack function called');
+        if (!this.currentMonster || this.currentMonster.hp <= 0) {
+            console.log('No valid monster to attack');
+            return;
+        }
         
         const weaponDamage = this.equipment.weapon ? this.equipment.weapon.damage : 0;
         const baseDamage = this.player.strength + weaponDamage;

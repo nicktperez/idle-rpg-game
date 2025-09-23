@@ -7,10 +7,29 @@
 
 body {
     font-family: 'Orbitron', monospace;
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
-    color: #fff;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(139, 69, 19, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(101, 67, 33, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(160, 82, 45, 0.2) 0%, transparent 50%),
+        linear-gradient(135deg, #2c1810, #1a0f0a, #0d0704);
+    color: #d4af37;
     overflow-x: hidden;
     min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(139, 69, 19, 0.1) 2px, rgba(139, 69, 19, 0.1) 4px),
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 69, 19, 0.1) 2px, rgba(139, 69, 19, 0.1) 4px);
+    pointer-events: none;
+    z-index: -1;
 }
 
 /* Game container */
@@ -23,12 +42,31 @@ body {
 
 /* Header styles */
 .game-header {
-    background: rgba(0, 0, 0, 0.7);
+    background: 
+        linear-gradient(45deg, rgba(139, 69, 19, 0.8), rgba(101, 67, 33, 0.8)),
+        radial-gradient(circle at center, rgba(160, 82, 45, 0.3), transparent);
     border-radius: 15px;
     padding: 15px;
     margin-bottom: 20px;
     backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    border: 3px solid #8b4513;
+    box-shadow: 
+        inset 0 0 20px rgba(139, 69, 19, 0.3),
+        0 0 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.game-header::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #d4af37, #b8860b, #d4af37);
+    border-radius: 17px;
+    z-index: -1;
+    opacity: 0.3;
 }
 
 .player-stats {
@@ -43,16 +81,18 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.6), rgba(101, 67, 33, 0.6));
     padding: 8px 15px;
     border-radius: 25px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid #8b4513;
     transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .stat:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, rgba(160, 82, 45, 0.8), rgba(139, 69, 19, 0.8));
     transform: translateY(-2px);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(212, 175, 55, 0.3);
 }
 
 .stat-icon {
@@ -61,11 +101,30 @@ body {
 
 /* Main game area */
 .game-main {
-    background: rgba(0, 0, 0, 0.6);
+    background: 
+        linear-gradient(135deg, rgba(139, 69, 19, 0.7), rgba(101, 67, 33, 0.7)),
+        radial-gradient(circle at 30% 70%, rgba(160, 82, 45, 0.4), transparent);
     border-radius: 20px;
     padding: 25px;
     backdrop-filter: blur(15px);
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    border: 3px solid #8b4513;
+    box-shadow: 
+        inset 0 0 30px rgba(0, 0, 0, 0.4),
+        0 0 30px rgba(0, 0, 0, 0.6);
+    position: relative;
+}
+
+.game-main::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    background: linear-gradient(45deg, #d4af37, #b8860b, #d4af37);
+    border-radius: 23px;
+    z-index: -1;
+    opacity: 0.2;
 }
 
 /* Combat area */
@@ -75,11 +134,29 @@ body {
     align-items: center;
     margin-bottom: 30px;
     padding: 30px;
-    background: linear-gradient(45deg, rgba(255, 0, 0, 0.1), rgba(255, 255, 0, 0.1));
+    background: 
+        linear-gradient(45deg, rgba(139, 69, 19, 0.8), rgba(101, 67, 33, 0.8)),
+        radial-gradient(circle at center, rgba(160, 82, 45, 0.3), transparent);
     border-radius: 15px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    border: 3px solid #8b4513;
     position: relative;
     min-height: 300px;
+    box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(212, 175, 55, 0.2);
+    overflow: hidden;
+}
+
+.combat-area::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(139, 69, 19, 0.1) 10px, rgba(139, 69, 19, 0.1) 20px);
+    pointer-events: none;
 }
 
 .monster-display, .player-display {
@@ -90,19 +167,63 @@ body {
 }
 
 .monster-sprite, .player-sprite {
-    font-size: 4rem;
+    font-size: 2rem;
+    font-weight: bold;
     animation: float 2s ease-in-out infinite;
-    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
     transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
+    color: #d4af37;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    letter-spacing: 2px;
+    text-align: center;
+    min-width: 120px;
 }
 
 .monster-sprite:hover, .player-sprite:hover {
     transform: scale(1.1);
 }
 
+/* Pokemon-like battle animations */
+.monster-sprite.attacking {
+    animation: monsterAttack 0.5s ease-in-out;
+}
+
+.player-sprite.attacking {
+    animation: playerAttack 0.5s ease-in-out;
+}
+
+.monster-sprite.taking-damage {
+    animation: takeDamage 0.3s ease-in-out;
+}
+
+.player-sprite.taking-damage {
+    animation: takeDamage 0.3s ease-in-out;
+}
+
 @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
+}
+
+@keyframes monsterAttack {
+    0% { transform: translateX(0px) scale(1); }
+    50% { transform: translateX(-20px) scale(1.1); }
+    100% { transform: translateX(0px) scale(1); }
+}
+
+@keyframes playerAttack {
+    0% { transform: translateX(0px) scale(1); }
+    50% { transform: translateX(20px) scale(1.1); }
+    100% { transform: translateX(0px) scale(1); }
+}
+
+@keyframes takeDamage {
+    0% { transform: translateX(0px); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+    100% { transform: translateX(0px); }
 }
 
 .monster-info {
@@ -112,25 +233,28 @@ body {
 .monster-name {
     font-size: 1.5em;
     margin-bottom: 10px;
-    color: #ff6b6b;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    color: #d4af37;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    font-weight: bold;
 }
 
 .monster-hp-bar {
     width: 200px;
     height: 20px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.8);
     border-radius: 10px;
     overflow: hidden;
     position: relative;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid #8b4513;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .hp-fill {
     height: 100%;
-    background: linear-gradient(90deg, #ff4757, #ff6b6b);
+    background: linear-gradient(90deg, #dc143c, #ff6347);
     transition: width 0.5s ease;
     position: relative;
+    box-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
 }
 
 .hp-fill::after {
@@ -227,21 +351,22 @@ body {
 /* Skills tree */
 .skill-tree {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    padding: 10px;
 }
 
 .skill-node {
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    padding: 20px;
+    border-radius: 10px;
+    padding: 12px;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
     border: 2px solid rgba(255, 255, 255, 0.1);
     position: relative;
     overflow: hidden;
+    min-height: 120px;
 }
 
 .skill-node::before {
@@ -271,20 +396,20 @@ body {
 }
 
 .skill-icon {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
+    font-size: 1.5rem;
+    margin-bottom: 6px;
 }
 
 .skill-name {
     font-weight: bold;
-    margin-bottom: 8px;
-    font-size: 1.1em;
+    margin-bottom: 4px;
+    font-size: 0.9em;
 }
 
 .skill-level, .skill-cost {
-    font-size: 0.9em;
+    font-size: 0.8em;
     opacity: 0.8;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 }
 
 /* Inventory */
@@ -645,9 +770,9 @@ body {
     }
     
     .skill-tree {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 10px;
-        padding: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 8px;
+        padding: 8px;
     }
     
     .equipment-slots {
@@ -721,12 +846,14 @@ body {
     }
     
     .skill-tree {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         padding: 5px;
+        gap: 6px;
     }
     
     .skill-node {
-        padding: 15px;
+        padding: 10px;
+        min-height: 100px;
     }
     
     .equipment-slot {
@@ -1480,8 +1607,13 @@ body {
 }
 
 .raid-boss-sprite {
-    font-size: 3rem;
+    font-size: 1.5rem;
+    font-weight: bold;
     animation: bossFloat 3s ease-in-out infinite;
+    color: #d4af37;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    letter-spacing: 1px;
+    text-align: center;
 }
 
 @keyframes bossFloat {

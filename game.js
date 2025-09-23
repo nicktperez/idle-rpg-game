@@ -201,7 +201,7 @@ class GameState {
                     id: 'goblin_king',
                     name: 'Goblin King Raid',
                     difficulty: 'easy',
-                    boss: { name: 'Goblin King', emoji: '👑', hp: 500, damage: 25, level: 10 },
+                    boss: { name: 'Goblin King', sprite: 'GOBLIN KING', hp: 500, damage: 25, level: 10 },
                     requirements: { level: 5, gold: 0 },
                     rewards: { gold: 1000, exp: 500, items: ['Goblin Crown'] },
                     completed: false,
@@ -211,7 +211,7 @@ class GameState {
                     id: 'orc_warlord',
                     name: 'Orc Warlord Raid',
                     difficulty: 'medium',
-                    boss: { name: 'Orc Warlord', emoji: '⚔️', hp: 1000, damage: 40, level: 15 },
+                    boss: { name: 'Orc Warlord', sprite: 'ORC LORD', hp: 1000, damage: 40, level: 15 },
                     requirements: { level: 10, gold: 500 },
                     rewards: { gold: 2000, exp: 1000, items: ['Warlord Axe'] },
                     completed: false,
@@ -221,7 +221,7 @@ class GameState {
                     id: 'dark_mage',
                     name: 'Dark Mage Raid',
                     difficulty: 'hard',
-                    boss: { name: 'Dark Mage', emoji: '🧙‍♂️', hp: 1500, damage: 60, level: 20 },
+                    boss: { name: 'Dark Mage', sprite: 'DARK MAGE', hp: 1500, damage: 60, level: 20 },
                     requirements: { level: 15, gold: 1000 },
                     rewards: { gold: 3000, exp: 1500, items: ['Dark Staff'] },
                     completed: false,
@@ -233,7 +233,7 @@ class GameState {
                     id: 'dragon_prince',
                     name: 'Dragon Prince Raid',
                     difficulty: 'epic',
-                    boss: { name: 'Dragon Prince', emoji: '🐲', hp: 5000, damage: 100, level: 30 },
+                    boss: { name: 'Dragon Prince', sprite: 'DRAGON PRINCE', hp: 5000, damage: 100, level: 30 },
                     requirements: { level: 25, gold: 2000 },
                     rewards: { gold: 10000, exp: 5000, items: ['Dragon Scale Armor', 'Dragon Sword'] },
                     completed: false,
@@ -243,7 +243,7 @@ class GameState {
                     id: 'phoenix_king',
                     name: 'Phoenix King Raid',
                     difficulty: 'epic',
-                    boss: { name: 'Phoenix King', emoji: '🔥', hp: 7500, damage: 120, level: 35 },
+                    boss: { name: 'Phoenix King', sprite: 'PHOENIX KING', hp: 7500, damage: 120, level: 35 },
                     requirements: { level: 30, gold: 3000 },
                     rewards: { gold: 15000, exp: 7500, items: ['Phoenix Feather', 'Fire Ring'] },
                     completed: false,
@@ -255,7 +255,7 @@ class GameState {
                     id: 'world_destroyer',
                     name: 'World Destroyer Raid',
                     difficulty: 'legendary',
-                    boss: { name: 'World Destroyer', emoji: '🌍', hp: 20000, damage: 200, level: 50 },
+                    boss: { name: 'World Destroyer', sprite: 'WORLD DESTROYER', hp: 20000, damage: 200, level: 50 },
                     requirements: { level: 40, gold: 5000, prestige: 1 },
                     rewards: { gold: 50000, exp: 25000, items: ['World Destroyer Armor', 'Legendary Sword', 'Crown of Power'] },
                     completed: false,
@@ -314,14 +314,14 @@ class GameState {
     
     spawnMonster() {
         const monsterTypes = [
-            { name: 'Baby Dragon', emoji: '🐲', hp: 50, damage: 8, gold: 25, exp: 20 },
-            { name: 'Goblin', emoji: '👹', hp: 30, damage: 5, gold: 15, exp: 12 },
-            { name: 'Orc', emoji: '👹', hp: 80, damage: 12, gold: 40, exp: 35 },
-            { name: 'Skeleton', emoji: '💀', hp: 25, damage: 4, gold: 12, exp: 10 },
-            { name: 'Dark Mage', emoji: '🧙‍♂️', hp: 60, damage: 15, gold: 50, exp: 45 },
-            { name: 'Giant Spider', emoji: '🕷️', hp: 40, damage: 7, gold: 20, exp: 18 },
-            { name: 'Minotaur', emoji: '🐂', hp: 120, damage: 20, gold: 75, exp: 60 },
-            { name: 'Phoenix', emoji: '🔥', hp: 90, damage: 18, gold: 60, exp: 50 }
+            { name: 'Baby Dragon', sprite: 'DRAGON', hp: 50, damage: 8, gold: 25, exp: 20 },
+            { name: 'Goblin', sprite: 'GOBLIN', hp: 30, damage: 5, gold: 15, exp: 12 },
+            { name: 'Orc', sprite: 'ORC', hp: 80, damage: 12, gold: 40, exp: 35 },
+            { name: 'Skeleton', sprite: 'SKELETON', hp: 25, damage: 4, gold: 12, exp: 10 },
+            { name: 'Dark Mage', sprite: 'MAGE', hp: 60, damage: 15, gold: 50, exp: 45 },
+            { name: 'Giant Spider', sprite: 'SPIDER', hp: 40, damage: 7, gold: 20, exp: 18 },
+            { name: 'Minotaur', sprite: 'MINOTAUR', hp: 120, damage: 20, gold: 75, exp: 60 },
+            { name: 'Phoenix', sprite: 'PHOENIX', hp: 90, damage: 18, gold: 60, exp: 50 }
         ];
         
         // Scale monster stats based on player level
@@ -347,7 +347,7 @@ class GameState {
         const monsterHpText = document.getElementById('monster-hp-text');
         
         if (this.currentMonster) {
-            monsterSprite.textContent = this.currentMonster.emoji;
+            monsterSprite.textContent = this.currentMonster.sprite;
             monsterName.textContent = this.currentMonster.name;
             
             const hpPercent = (this.currentMonster.hp / this.currentMonster.maxHp) * 100;
@@ -376,32 +376,49 @@ class GameState {
         const isCrit = Math.random() < this.player.critChance;
         const damage = Math.floor(baseDamage * (isCrit ? 2.5 : 1));
         
-        this.currentMonster.hp -= damage;
-        this.showDamageNumber(damage, isCrit);
-        this.playSound(isCrit ? 'crit' : 'attack');
+        // Player attack animation
+        const playerSprite = document.getElementById('player-sprite');
+        playerSprite.classList.add('attacking');
         
-        // Update stats
-        this.stats.totalDamageDealt += damage;
-        if (isCrit) {
-            this.stats.criticalHits++;
-            this.updateAchievementProgress('crit_master', 1);
-        }
-        if (damage > this.stats.highestDamage) {
-            this.stats.highestDamage = damage;
-        }
-        
-        this.addToCombatLog(`${isCrit ? 'CRITICAL HIT! ' : ''}You deal ${damage} damage!`);
-        
-        if (this.currentMonster.hp <= 0) {
-            this.defeatMonster();
-        } else {
-            // Monster counter-attack
-            setTimeout(() => this.monsterAttack(), 500);
-        }
-        
-        this.updateMonsterDisplay();
-        this.updateAchievementProgress('monster_slayer', 1);
-        this.updateQuestProgress('kill_monsters', 1);
+        // Show damage after animation
+        setTimeout(() => {
+            this.currentMonster.hp -= damage;
+            this.showDamageNumber(damage, isCrit);
+            this.playSound(isCrit ? 'crit' : 'attack');
+            
+            // Monster damage animation
+            const monsterSprite = document.getElementById('monster-sprite');
+            monsterSprite.classList.add('taking-damage');
+            
+            // Remove animation classes
+            setTimeout(() => {
+                playerSprite.classList.remove('attacking');
+                monsterSprite.classList.remove('taking-damage');
+            }, 300);
+            
+            // Update stats
+            this.stats.totalDamageDealt += damage;
+            if (isCrit) {
+                this.stats.criticalHits++;
+                this.updateAchievementProgress('crit_master', 1);
+            }
+            if (damage > this.stats.highestDamage) {
+                this.stats.highestDamage = damage;
+            }
+            
+            this.addToCombatLog(`${isCrit ? 'CRITICAL HIT! ' : ''}You deal ${damage} damage!`);
+            
+            if (this.currentMonster.hp <= 0) {
+                this.defeatMonster();
+            } else {
+                // Monster counter-attack
+                setTimeout(() => this.monsterAttack(), 500);
+            }
+            
+            this.updateMonsterDisplay();
+            this.updateAchievementProgress('monster_slayer', 1);
+            this.updateQuestProgress('kill_monsters', 1);
+        }, 250);
     }
     
     monsterAttack() {
@@ -411,17 +428,33 @@ class GameState {
         const totalDefense = this.player.defense + armorDefense;
         const damage = Math.max(1, this.currentMonster.damage - totalDefense);
         
-        this.player.hp -= damage;
-        this.showDamageNumber(damage, false, true);
+        // Monster attack animation
+        const monsterSprite = document.getElementById('monster-sprite');
+        monsterSprite.classList.add('attacking');
         
-        this.addToCombatLog(`${this.currentMonster.name} deals ${damage} damage!`);
-        
-        if (this.player.hp <= 0) {
-            this.player.hp = 1; // Prevent death for now
-            this.addToCombatLog('You are knocked unconscious!');
-        }
-        
-        this.updatePlayerDisplay();
+        setTimeout(() => {
+            this.player.hp -= damage;
+            this.showDamageNumber(damage, false, true);
+            
+            // Player damage animation
+            const playerSprite = document.getElementById('player-sprite');
+            playerSprite.classList.add('taking-damage');
+            
+            // Remove animation classes
+            setTimeout(() => {
+                monsterSprite.classList.remove('attacking');
+                playerSprite.classList.remove('taking-damage');
+            }, 300);
+            
+            this.addToCombatLog(`${this.currentMonster.name} deals ${damage} damage!`);
+            
+            if (this.player.hp <= 0) {
+                this.player.hp = 1; // Prevent death for now
+                this.addToCombatLog('You are knocked unconscious!');
+            }
+            
+            this.updatePlayerDisplay();
+        }, 250);
     }
     
     defeatMonster() {
@@ -904,19 +937,19 @@ updateQuestTimer() {
     }
     
     getItemEmoji(itemName) {
-        const itemEmojis = {
-            'Goblin Crown': '👑',
-            'Warlord Axe': '🪓',
-            'Dark Staff': '🪄',
-            'Dragon Scale Armor': '🐲',
-            'Dragon Sword': '⚔️',
-            'Phoenix Feather': '🔥',
-            'Fire Ring': '💍',
-            'World Destroyer Armor': '🌍',
-            'Legendary Sword': '🗡️',
-            'Crown of Power': '👑'
+        const itemTexts = {
+            'Goblin Crown': 'CROWN',
+            'Warlord Axe': 'AXE',
+            'Dark Staff': 'STAFF',
+            'Dragon Scale Armor': 'DRAGON ARMOR',
+            'Dragon Sword': 'DRAGON SWORD',
+            'Phoenix Feather': 'PHOENIX FEATHER',
+            'Fire Ring': 'FIRE RING',
+            'World Destroyer Armor': 'WORLD ARMOR',
+            'Legendary Sword': 'LEGENDARY SWORD',
+            'Crown of Power': 'POWER CROWN'
         };
-        return itemEmojis[itemName] || '📦';
+        return itemTexts[itemName] || 'ITEM';
     }
     
     getItemType(itemName) {
@@ -977,8 +1010,8 @@ updateQuestTimer() {
                     `;
                     
                     const rewardsList = `
-                        <div class="raid-reward">💰 ${raid.rewards.gold.toLocaleString()}</div>
-                        <div class="raid-reward">⭐ ${raid.rewards.exp.toLocaleString()} EXP</div>
+                        <div class="raid-reward">GOLD: ${raid.rewards.gold.toLocaleString()}</div>
+                        <div class="raid-reward">EXP: ${raid.rewards.exp.toLocaleString()}</div>
                         ${raid.rewards.items.map(item => `<div class="raid-reward">${this.getItemEmoji(item)} ${item}</div>`).join('')}
                     `;
                     
@@ -991,7 +1024,7 @@ updateQuestTimer() {
                             </div>
                         </div>
                         <div class="raid-boss">
-                            <div class="raid-boss-sprite">${raid.boss.emoji}</div>
+                            <div class="raid-boss-sprite">${raid.boss.sprite}</div>
                             <div class="raid-boss-info">
                                 <h4>${raid.boss.name}</h4>
                                 <div class="raid-boss-stats">

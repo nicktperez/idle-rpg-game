@@ -310,6 +310,34 @@ class GameState {
         this.currentLocation = locationId;
         this.updateLocationDisplay();
         this.updateCurrentLocationName();
+        this.setupLocationEventListeners(locationId);
+    }
+    
+    setupLocationEventListeners(locationId) {
+        // Set up event listeners for specific locations
+        if (locationId === 'battle') {
+            this.setupBattleEventListeners();
+        } else if (locationId === 'shop') {
+            this.setupShopEventListeners();
+        }
+    }
+    
+    setupBattleEventListeners() {
+        const combatArea = document.querySelector('.combat-area');
+        if (combatArea && !combatArea.hasAttribute('data-listeners-setup')) {
+            combatArea.addEventListener('click', (e) => {
+                if (e.target.closest('.monster-sprite')) {
+                    this.attack();
+                }
+            });
+            combatArea.setAttribute('data-listeners-setup', 'true');
+            console.log('Battle event listeners set up');
+        }
+    }
+    
+    setupShopEventListeners() {
+        // Shop event listeners are already set up globally, but we can add location-specific ones here if needed
+        console.log('Shop event listeners ready');
     }
     
     updateLocationDisplay() {
@@ -1543,7 +1571,17 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const category = btn.dataset.category;
             const shopItems = document.getElementById('shop-items');
+            if (!shopItems) {
+                console.log('Shop items container not found');
+                return;
+            }
             shopItems.innerHTML = '';
+            
+            // Use the shopItems data from the global constant
+            if (!shopItems || !shopItems[category]) {
+                console.log('No shop items found for category:', category);
+                return;
+            }
             
             shopItems[category].forEach(item => {
                 const itemEl = document.createElement('div');
@@ -1595,12 +1633,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('load-btn').addEventListener('click', () => game.loadGame());
     document.getElementById('reset-btn').addEventListener('click', () => game.resetGame());
     
-    // Combat area click for manual attack
-    document.querySelector('.combat-area').addEventListener('click', (e) => {
-        if (e.target.closest('.monster-sprite')) {
-            game.attack();
-        }
-    });
+    // Combat area event listeners will be set up dynamically when navigating to battle area
     
     // Tutorial controls
     document.getElementById('tutorial-next').addEventListener('click', () => game.nextTutorialStep());

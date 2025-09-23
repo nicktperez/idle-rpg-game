@@ -45,6 +45,26 @@
         </div>
     </div>
 
+    <!-- Stats Panel -->
+    <div id="stats-panel" class="stats-panel">
+        <div class="stats-content">
+            <h2>Game Statistics</h2>
+            <div class="stat-row">
+                <span class="stat-label">Monsters Defeated:</span>
+                <span id="stat-monsters-defeated">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Damage Dealt:</span>
+                <span id="stat-damage-dealt">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Critical Hits:</span>
+                <span id="stat-crit-hits">0</span>
+            </div>
+            <button id="stats-close" class="close-btn">Close</button>
+        </div>
+    </div>
+
     <!-- Save Notification -->
     <div id="save-notification" class="notification">Game Saved!</div>
 
@@ -70,6 +90,10 @@
                 <div class="stat">
                     <span class="stat-label">Gems:</span>
                     <span id="player-gems">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Quest:</span>
+                    <span id="quest-timer">00:00:00</span>
                 </div>
                 <div class="stat">
                     <span class="stat-label">EXP:</span>
@@ -586,15 +610,17 @@
                             <g id="combat-effects" class="combat-effects"></g>
                         </svg>
                         
-                        <div class="monster-display">
-                            <div class="monster-sprite" id="monster-sprite">GOBLIN</div>
-                            <div class="monster-info">
-                                <div class="monster-name" id="monster-name">Goblin</div>
-                                <div class="monster-hp">
-                                    <div class="hp-bar">
-                                        <div class="hp-fill" id="monster-hp-fill"></div>
+                        <div class="combat-area">
+                            <div class="monster-display">
+                                <div class="monster-sprite" id="monster-sprite">GOBLIN</div>
+                                <div class="monster-info">
+                                    <div class="monster-name" id="monster-name">Goblin</div>
+                                    <div class="monster-hp">
+                                        <div class="hp-bar">
+                                            <div class="hp-fill" id="monster-hp-fill"></div>
+                                        </div>
+                                        <span id="monster-hp-text">50/50</span>
                                     </div>
-                                    <span id="monster-hp-text">50/50</span>
                                 </div>
                             </div>
                         </div>

@@ -2218,3 +2218,48 @@ body::before {
         font-size: 0.5rem;
     }
 }
+
+/* Stats Panel */
+.stats-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #2c1810, #1a0f08);
+    border: 3px solid #d4af37;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 500px;
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    display: none;
+}
+
+.stats-content h2 {
+    color: #d4af37;
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: 'Orbitron', monospace;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #654321;
+}
+
+.stat-row:last-child {
+    border-bottom: none;
+}
+
+.stat-label {
+    color: #d4af37;
+    font-weight: bold;
+}
+
+.stat-row span:last-child {
+    color: #ffd700;
+    font-weight: bold;
+}

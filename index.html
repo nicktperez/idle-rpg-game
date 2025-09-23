@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idle RPG Adventure</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Header with player stats -->
+        <header class="game-header">
+            <div class="player-stats">
+                <div class="stat">
+                    <span class="stat-icon">⚔️</span>
+                    <span id="player-level">1</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">❤️</span>
+                    <span id="player-hp">100</span>/<span id="player-max-hp">100</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">💪</span>
+                    <span id="player-strength">10</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">🛡️</span>
+                    <span id="player-defense">5</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">💰</span>
+                    <span id="player-gold">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-icon">💎</span>
+                    <span id="player-gems">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main game area -->
+        <main class="game-main">
+            <!-- Combat area -->
+            <section class="combat-area">
+                <div class="monster-display">
+                    <div class="monster-sprite" id="monster-sprite">🐲</div>
+                    <div class="monster-info">
+                        <h3 id="monster-name">Baby Dragon</h3>
+                        <div class="monster-stats">
+                            <div class="monster-hp-bar">
+                                <div class="hp-fill" id="monster-hp-fill"></div>
+                                <span class="hp-text" id="monster-hp-text">50/50</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="player-display">
+                    <div class="player-sprite" id="player-sprite">🧙‍♂️</div>
+                </div>
+                <div class="combat-log" id="combat-log"></div>
+            </section>
+
+            <!-- Tabs for different game sections -->
+            <nav class="game-tabs">
+                <button class="tab-btn active" data-tab="skills">Skills</button>
+                <button class="tab-btn" data-tab="inventory">Inventory</button>
+                <button class="tab-btn" data-tab="shop">Shop</button>
+                <button class="tab-btn" data-tab="achievements">Achievements</button>
+            </nav>
+
+            <!-- Tab content -->
+            <div class="tab-content">
+                <!-- Skills tab -->
+                <div class="tab-panel active" id="skills-panel">
+                    <h2>Skill Tree</h2>
+                    <div class="skill-tree">
+                        <div class="skill-node" data-skill="auto-attack">
+                            <div class="skill-icon">⚡</div>
+                            <div class="skill-name">Auto Attack</div>
+                            <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                            <div class="skill-cost">Cost: <span class="skill-cost-num">100</span> 💰</div>
+                        </div>
+                        <div class="skill-node" data-skill="crit-chance">
+                            <div class="skill-icon">🎯</div>
+                            <div class="skill-name">Critical Strike</div>
+                            <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                            <div class="skill-cost">Cost: <span class="skill-cost-num">250</span> 💰</div>
+                        </div>
+                        <div class="skill-node" data-skill="gold-bonus">
+                            <div class="skill-icon">💎</div>
+                            <div class="skill-name">Gold Rush</div>
+                            <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                            <div class="skill-cost">Cost: <span class="skill-cost-num">500</span> 💰</div>
+                        </div>
+                        <div class="skill-node" data-skill="health-regen">
+                            <div class="skill-icon">💚</div>
+                            <div class="skill-name">Regeneration</div>
+                            <div class="skill-level">Lv.<span class="skill-level-num">0</span></div>
+                            <div class="skill-cost">Cost: <span class="skill-cost-num">300</span> 💰</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory tab -->
+                <div class="tab-panel" id="inventory-panel">
+                    <h2>Inventory</h2>
+                    <div class="equipment-slots">
+                        <div class="equipment-slot" data-slot="weapon">
+                            <div class="slot-icon">⚔️</div>
+                            <div class="item-name">Rusty Sword</div>
+                        </div>
+                        <div class="equipment-slot" data-slot="armor">
+                            <div class="slot-icon">🛡️</div>
+                            <div class="item-name">Cloth Armor</div>
+                        </div>
+                        <div class="equipment-slot" data-slot="accessory">
+                            <div class="slot-icon">💍</div>
+                            <div class="item-name">None</div>
+                        </div>
+                    </div>
+                    <div class="inventory-grid" id="inventory-grid">
+                        <!-- Inventory items will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Shop tab -->
+                <div class="tab-panel" id="shop-panel">
+                    <h2>Equipment Shop</h2>
+                    <div class="shop-categories">
+                        <button class="shop-category active" data-category="weapons">Weapons</button>
+                        <button class="shop-category" data-category="armor">Armor</button>
+                        <button class="shop-category" data-category="accessories">Accessories</button>
+                    </div>
+                    <div class="shop-items" id="shop-items">
+                        <!-- Shop items will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Achievements tab -->
+                <div class="tab-panel" id="achievements-panel">
+                    <h2>Achievements</h2>
+                    <div class="achievements-list" id="achievements-list">
+                        <!-- Achievements will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Floating damage numbers -->
+        <div id="damage-numbers"></div>
+
+        <!-- Particle effects -->
+        <div id="particles"></div>
+
+        <!-- Save/Load buttons -->
+        <div class="save-controls">
+            <button id="save-btn">Save Game</button>
+            <button id="load-btn">Load Game</button>
+            <button id="reset-btn">Reset Game</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
+

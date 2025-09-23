@@ -306,12 +306,15 @@ class GameState {
     
     // World Map Navigation
     navigateToLocation(locationId) {
+        console.log('Navigating to:', locationId);
         this.currentLocation = locationId;
         this.updateLocationDisplay();
         this.updateCurrentLocationName();
     }
     
     updateLocationDisplay() {
+        console.log('Updating display for location:', this.currentLocation);
+        
         // Hide all sections
         document.getElementById('world-map').classList.remove('active');
         document.querySelectorAll('.location-content').forEach(section => {
@@ -321,10 +324,15 @@ class GameState {
         // Show current location
         if (this.currentLocation === 'world-map') {
             document.getElementById('world-map').classList.add('active');
+            console.log('Showing world map');
         } else {
             const targetSection = document.getElementById(this.currentLocation + '-area');
+            console.log('Looking for section:', this.currentLocation + '-area', targetSection);
             if (targetSection) {
                 targetSection.classList.add('active');
+                console.log('Showing location section:', this.currentLocation);
+            } else {
+                console.error('Location section not found:', this.currentLocation + '-area');
             }
         }
     }

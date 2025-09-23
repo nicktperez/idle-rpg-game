@@ -603,29 +603,59 @@
                             </g>
                             
                             <!-- Interactive Arena Floor -->
-                            <rect x="200" y="220" width="400" height="60" fill="rgba(139, 69, 19, 0.3)" stroke="#8b4513" stroke-width="2" class="arena-floor" id="arena-floor" style="cursor: pointer;"/>
-                            <text x="400" y="250" text-anchor="middle" fill="#d4af37" font-family="Orbitron, monospace" font-size="14" class="arena-text">Click to Attack!</text>
+                            <rect x="200" y="220" width="400" height="60" fill="rgba(139, 69, 19, 0.4)" stroke="#8b4513" stroke-width="3" class="arena-floor" id="arena-floor" style="cursor: pointer;"/>
+                            
+                            <!-- Arena Combat Zone -->
+                            <rect x="220" y="200" width="360" height="100" fill="none" stroke="#d4af37" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
+                            
+                            <!-- Combat Center Marker -->
+                            <circle cx="400" cy="250" r="15" fill="#d4af37" opacity="0.3"/>
+                            <circle cx="400" cy="250" r="8" fill="#d4af37" opacity="0.6"/>
+                            
+                            <!-- Attack Direction Indicators -->
+                            <path d="M 350 250 L 320 250" stroke="#ff6b35" stroke-width="4" marker-end="url(#arrowhead)" opacity="0.8"/>
+                            <path d="M 450 250 L 480 250" stroke="#ff6b35" stroke-width="4" marker-end="url(#arrowhead)" opacity="0.8"/>
+                            
+                            <!-- Arrow marker definition -->
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#ff6b35"/>
+                                </marker>
+                            </defs>
+                            
+                            <text x="400" y="270" text-anchor="middle" fill="#d4af37" font-family="Orbitron, monospace" font-size="12" class="arena-text">⚔️ BATTLE ZONE ⚔️</text>
+                            <text x="400" y="285" text-anchor="middle" fill="#ffd700" font-family="Orbitron, monospace" font-size="10" class="arena-text">Click anywhere to attack!</text>
+                            
+                            <!-- Monster Position in Arena -->
+                            <g id="monster-position" transform="translate(600, 180)">
+                                <!-- Monster will be positioned here -->
+                            </g>
+                            
+                            <!-- Hero Position in Arena -->
+                            <g id="hero-position" transform="translate(200, 180)">
+                                <!-- Hero will be positioned here -->
+                            </g>
                             
                             <!-- Combat Effects Area -->
                             <g id="combat-effects" class="combat-effects"></g>
                         </svg>
                         
-                        <div class="combat-area">
-                            <div class="monster-display">
-                                <div class="monster-sprite" id="monster-sprite">GOBLIN</div>
-                                <div class="monster-info">
-                                    <div class="monster-name" id="monster-name">Goblin</div>
-                                    <div class="monster-hp">
-                                        <div class="hp-bar">
-                                            <div class="hp-fill" id="monster-hp-fill"></div>
-                                        </div>
-                                        <span id="monster-hp-text">50/50</span>
+                        <!-- Monster Display (positioned over the arena) -->
+                        <div class="monster-display arena-monster">
+                            <div class="monster-sprite" id="monster-sprite">GOBLIN</div>
+                            <div class="monster-info">
+                                <div class="monster-name" id="monster-name">Goblin</div>
+                                <div class="monster-hp">
+                                    <div class="hp-bar">
+                                        <div class="hp-fill" id="monster-hp-fill"></div>
                                     </div>
+                                    <span id="monster-hp-text">50/50</span>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="player-display">
+                        <!-- Hero Display (positioned over the arena) -->
+                        <div class="hero-display arena-hero">
                             <div class="player-sprite" id="player-sprite">HERO</div>
                             <div class="player-info">
                                 <div class="player-name">Hero</div>

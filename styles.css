@@ -436,23 +436,39 @@ body::before {
 /* Interactive Arena Floor */
 .arena-floor {
     transition: all 0.3s ease;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
 .arena-floor:hover {
-    fill: rgba(139, 69, 19, 0.6) !important;
-    stroke: #d4af37 !important;
-    stroke-width: 3px !important;
+    fill: rgba(139, 69, 19, 0.7) !important;
+    stroke: #ffd700 !important;
+    stroke-width: 4px !important;
+    filter: drop-shadow(0 6px 12px rgba(212, 175, 55, 0.4));
 }
 
 .arena-text {
     pointer-events: none;
     user-select: none;
     transition: all 0.3s ease;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.arena-floor:hover + .arena-text {
+.arena-floor:hover ~ .arena-text {
     fill: #ffd700 !important;
     font-weight: bold;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+}
+
+/* Arena Combat Zone */
+.arena-floor:hover ~ rect[stroke-dasharray] {
+    stroke: #ff6b35 !important;
+    stroke-width: 3px !important;
+    opacity: 1 !important;
+}
+
+.arena-floor:hover ~ circle {
+    fill: #ff6b35 !important;
+    opacity: 0.8 !important;
 }
 
 /* Combat Effects */
@@ -2262,4 +2278,93 @@ body::before {
 .stat-row span:last-child {
     color: #ffd700;
     font-weight: bold;
+}
+
+/* Arena Positioning */
+.arena-monster {
+    position: absolute;
+    top: 50%;
+    right: 20%;
+    transform: translateY(-50%);
+    z-index: 20;
+}
+
+.arena-hero {
+    position: absolute;
+    top: 50%;
+    left: 20%;
+    transform: translateY(-50%);
+    z-index: 20;
+}
+
+/* Make arena sprites larger and more visible */
+.arena-monster .monster-sprite,
+.arena-hero .player-sprite {
+    font-size: 2rem;
+    padding: 20px;
+    min-height: 100px;
+}
+
+/* Arena monster info styling */
+.arena-monster .monster-info {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.arena-monster .monster-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #d4af37;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.arena-monster .monster-hp {
+    margin-top: 5px;
+}
+
+.arena-monster .hp-bar {
+    width: 120px;
+    height: 8px;
+    background: rgba(139, 0, 0, 0.5);
+    border: 1px solid #8b0000;
+    border-radius: 4px;
+    margin: 0 auto;
+}
+
+.arena-monster .hp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff0000, #ff6b6b);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.arena-monster .monster-hp span {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.9rem;
+    color: #ff6b6b;
+    font-weight: bold;
+}
+
+/* Arena hero info styling */
+.arena-hero .player-info {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.arena-hero .player-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #90ee90;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.arena-hero .player-stats {
+    margin-top: 5px;
+    font-size: 0.9rem;
+    color: #90ee90;
+}
+
+.arena-hero .player-stats div {
+    margin: 2px 0;
 }

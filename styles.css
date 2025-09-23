@@ -577,47 +577,218 @@ body {
 }
 
 /* Responsive design */
+#game-container {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.game-header {
+    flex-shrink: 0;
+    margin-bottom: 10px;
+}
+
+.game-main {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}
+
+.combat-area {
+    flex-shrink: 0;
+    margin-bottom: 15px;
+    padding: 20px;
+    min-height: 200px;
+}
+
+.game-tabs {
+    flex-shrink: 0;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.tab-content {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+/* Mobile optimizations */
 @media (max-width: 768px) {
     #game-container {
-        padding: 10px;
+        padding: 5px;
     }
     
     .player-stats {
-        gap: 10px;
+        gap: 8px;
+        flex-wrap: wrap;
     }
     
     .stat {
-        padding: 6px 12px;
-        font-size: 0.9em;
+        padding: 4px 8px;
+        font-size: 0.8em;
     }
     
     .combat-area {
         flex-direction: column;
-        gap: 20px;
-        padding: 20px;
+        gap: 15px;
+        padding: 15px;
+        min-height: 150px;
     }
     
     .monster-sprite, .player-sprite {
-        font-size: 3rem;
+        font-size: 2.5rem;
     }
     
     .skill-tree {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        padding: 10px;
     }
     
     .equipment-slots {
-        gap: 10px;
+        gap: 8px;
+        flex-wrap: wrap;
     }
     
     .shop-items {
         grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
     }
     
     .save-controls {
-        position: static;
-        margin-top: 20px;
-        flex-direction: row;
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .save-controls button {
+        padding: 8px 12px;
+        font-size: 0.8em;
+    }
+    
+    .game-tabs {
+        gap: 5px;
+    }
+    
+    .tab-btn {
+        padding: 8px 12px;
+        font-size: 0.8em;
+    }
+    
+    .tutorial-modal, .help-panel {
+        width: 95%;
+        padding: 20px;
+    }
+    
+    .quest-timer h3 {
+        font-size: 1em;
+    }
+    
+    .achievements-list {
+        gap: 10px;
+    }
+    
+    .achievement {
+        padding: 15px;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .player-stats {
         justify-content: center;
+    }
+    
+    .stat {
+        padding: 3px 6px;
+        font-size: 0.7em;
+    }
+    
+    .monster-sprite, .player-sprite {
+        font-size: 2rem;
+    }
+    
+    .skill-tree {
+        grid-template-columns: 1fr;
+        padding: 5px;
+    }
+    
+    .skill-node {
+        padding: 15px;
+    }
+    
+    .equipment-slot {
+        min-width: 80px;
+        padding: 15px;
+    }
+    
+    .shop-item {
+        padding: 15px;
+    }
+    
+    .save-controls {
+        bottom: 5px;
+        right: 5px;
+    }
+    
+    .save-controls button {
+        padding: 6px 10px;
+        font-size: 0.7em;
+    }
+}
+
+/* Tablet optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+    #game-container {
+        max-width: 100%;
+        padding: 15px;
+    }
+    
+    .player-stats {
+        gap: 15px;
+    }
+    
+    .combat-area {
+        padding: 25px;
+    }
+    
+    .skill-tree {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Large screen optimizations */
+@media (min-width: 1025px) {
+    .skill-tree {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .save-controls {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        flex-direction: row;
+        gap: 10px;
     }
 }
 
@@ -1158,5 +1329,319 @@ body {
         box-shadow: 0 0 30px rgba(255, 215, 0, 1);
         transform: scale(1.05);
     }
+}
+
+/* Raid System */
+.raid-categories {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.raid-category {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.raid-category:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.raid-category.active {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.raid-timer {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.raid-timer h3 {
+    color: #ff6b6b;
+    margin: 0;
+    font-size: 1.1em;
+}
+
+.raid-list {
+    display: grid;
+    gap: 15px;
+}
+
+.raid {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.raid::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.raid:hover::before {
+    left: 100%;
+}
+
+.raid.available {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(139, 195, 74, 0.2));
+    border-color: rgba(76, 175, 80, 0.5);
+}
+
+.raid.completed {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 235, 59, 0.2));
+    border-color: rgba(255, 193, 7, 0.5);
+}
+
+.raid.locked {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.05);
+    opacity: 0.6;
+}
+
+.raid-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.raid-title {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.raid-difficulty {
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.raid-difficulty.easy {
+    background: rgba(76, 175, 80, 0.3);
+    color: #4caf50;
+}
+
+.raid-difficulty.medium {
+    background: rgba(255, 193, 7, 0.3);
+    color: #ffc107;
+}
+
+.raid-difficulty.hard {
+    background: rgba(244, 67, 54, 0.3);
+    color: #f44336;
+}
+
+.raid-difficulty.epic {
+    background: rgba(156, 39, 176, 0.3);
+    color: #9c27b0;
+}
+
+.raid-difficulty.legendary {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 193, 7, 0.3));
+    color: #ffd700;
+}
+
+.raid-boss {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.raid-boss-sprite {
+    font-size: 3rem;
+    animation: bossFloat 3s ease-in-out infinite;
+}
+
+@keyframes bossFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-10px) rotate(1deg); }
+    75% { transform: translateY(10px) rotate(-1deg); }
+}
+
+.raid-boss-info h4 {
+    color: #fff;
+    margin-bottom: 5px;
+    font-size: 1.1em;
+}
+
+.raid-boss-stats {
+    color: #ccc;
+    font-size: 0.9em;
+}
+
+.raid-requirements {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.raid-requirements h5 {
+    color: #4ecdc4;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.raid-requirements ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.raid-requirements li {
+    color: #fff;
+    font-size: 0.8em;
+    margin-bottom: 3px;
+    padding-left: 15px;
+    position: relative;
+}
+
+.raid-requirements li::before {
+    content: '•';
+    color: #4ecdc4;
+    position: absolute;
+    left: 0;
+}
+
+.raid-requirements li.met {
+    color: #4caf50;
+}
+
+.raid-requirements li.met::before {
+    content: '✓';
+    color: #4caf50;
+}
+
+.raid-rewards {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.raid-reward-list {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.raid-reward {
+    background: rgba(255, 215, 0, 0.2);
+    color: #ffd700;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.raid-start-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.raid-start-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.raid-start-btn:disabled {
+    background: rgba(255, 255, 255, 0.1);
+    color: #666;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.raid-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7em;
+    font-weight: bold;
+}
+
+.raid-status.available {
+    background: rgba(76, 175, 80, 0.8);
+    color: #fff;
+}
+
+.raid-status.completed {
+    background: rgba(255, 193, 7, 0.8);
+    color: #000;
+}
+
+.raid-status.locked {
+    background: rgba(158, 158, 158, 0.8);
+    color: #fff;
+}
+
+/* Raid Progress */
+.raid-progress {
+    margin: 15px 0;
+}
+
+.raid-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.raid-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b6b, #ee5a52);
+    transition: width 0.5s ease;
+}
+
+.raid-progress-text {
+    color: #fff;
+    font-size: 0.9em;
+    text-align: center;
 }
 

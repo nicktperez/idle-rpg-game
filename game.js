@@ -106,10 +106,15 @@ class GameState {
         this.inventory = [];
         this.achievements = this.initializeAchievements();
         this.quests = this.initializeQuests();
+        this.raids = this.initializeRaids();
         this.currentMonster = null;
+        this.currentRaid = null;
         this.combatLog = [];
         this.gameStartTime = Date.now();
         this.lastQuestReset = Date.now();
+        this.lastDailyRaidReset = Date.now();
+        this.lastWeeklyRaidReset = Date.now();
+        this.lastMonthlyRaidReset = Date.now();
         
         // Combat system
         this.lastAutoAttack = 0;
@@ -139,7 +144,8 @@ class GameState {
             { id: 'crit_master', name: 'Critical Master', description: 'Deal 50 critical hits', icon: '💥', unlocked: false, progress: 0, target: 50, reward: '+5% Crit Damage' },
             { id: 'prestige_master', name: 'Prestige Master', description: 'Complete your first prestige', icon: '👑', unlocked: false, progress: 0, target: 1, reward: '+50% All Bonuses' },
             { id: 'quest_completer', name: 'Quest Master', description: 'Complete 20 daily quests', icon: '📋', unlocked: false, progress: 0, target: 20, reward: '+2 Quest Rewards' },
-            { id: 'time_played', name: 'Dedicated Player', description: 'Play for 1 hour total', icon: '⏰', unlocked: false, progress: 0, target: 3600, reward: '+1% All Stats' }
+            { id: 'time_played', name: 'Dedicated Player', description: 'Play for 1 hour total', icon: '⏰', unlocked: false, progress: 0, target: 3600, reward: '+1% All Stats' },
+            { id: 'raid_master', name: 'Raid Master', description: 'Complete 10 raids', icon: '⚔️', unlocked: false, progress: 0, target: 10, reward: '+25% Raid Rewards' }
         ];
     }
     
@@ -186,6 +192,77 @@ class GameState {
                 type: 'economy'
             }
         ];
+    }
+    
+    initializeRaids() {
+        return {
+            daily: [
+                {
+                    id: 'goblin_king',
+                    name: 'Goblin King Raid',
+                    difficulty: 'easy',
+                    boss: { name: 'Goblin King', emoji: '👑', hp: 500, damage: 25, level: 10 },
+                    requirements: { level: 5, gold: 0 },
+                    rewards: { gold: 1000, exp: 500, items: ['Goblin Crown'] },
+                    completed: false,
+                    available: true
+                },
+                {
+                    id: 'orc_warlord',
+                    name: 'Orc Warlord Raid',
+                    difficulty: 'medium',
+                    boss: { name: 'Orc Warlord', emoji: '⚔️', hp: 1000, damage: 40, level: 15 },
+                    requirements: { level: 10, gold: 500 },
+                    rewards: { gold: 2000, exp: 1000, items: ['Warlord Axe'] },
+                    completed: false,
+                    available: false
+                },
+                {
+                    id: 'dark_mage',
+                    name: 'Dark Mage Raid',
+                    difficulty: 'hard',
+                    boss: { name: 'Dark Mage', emoji: '🧙‍♂️', hp: 1500, damage: 60, level: 20 },
+                    requirements: { level: 15, gold: 1000 },
+                    rewards: { gold: 3000, exp: 1500, items: ['Dark Staff'] },
+                    completed: false,
+                    available: false
+                }
+            ],
+            weekly: [
+                {
+                    id: 'dragon_prince',
+                    name: 'Dragon Prince Raid',
+                    difficulty: 'epic',
+                    boss: { name: 'Dragon Prince', emoji: '🐲', hp: 5000, damage: 100, level: 30 },
+                    requirements: { level: 25, gold: 2000 },
+                    rewards: { gold: 10000, exp: 5000, items: ['Dragon Scale Armor', 'Dragon Sword'] },
+                    completed: false,
+                    available: false
+                },
+                {
+                    id: 'phoenix_king',
+                    name: 'Phoenix King Raid',
+                    difficulty: 'epic',
+                    boss: { name: 'Phoenix King', emoji: '🔥', hp: 7500, damage: 120, level: 35 },
+                    requirements: { level: 30, gold: 3000 },
+                    rewards: { gold: 15000, exp: 7500, items: ['Phoenix Feather', 'Fire Ring'] },
+                    completed: false,
+                    available: false
+                }
+            ],
+            monthly: [
+                {
+                    id: 'world_destroyer',
+                    name: 'World Destroyer Raid',
+                    difficulty: 'legendary',
+                    boss: { name: 'World Destroyer', emoji: '🌍', hp: 20000, damage: 200, level: 50 },
+                    requirements: { level: 40, gold: 5000, prestige: 1 },
+                    rewards: { gold: 50000, exp: 25000, items: ['World Destroyer Armor', 'Legendary Sword', 'Crown of Power'] },
+                    completed: false,
+                    available: false
+                }
+            ]
+        };
     }
     
     initializeAudio() {
@@ -348,6 +425,12 @@ class GameState {
     }
     
     defeatMonster() {
+        // Check if this is a raid boss
+        if (this.currentMonster.isRaidBoss) {
+            this.completeRaid();
+            return;
+        }
+        
         const goldReward = Math.floor(this.currentMonster.gold * this.player.goldBonus * (1 + this.player.prestigeGoldBonus));
         const expReward = Math.floor(this.currentMonster.exp * (1 + this.player.prestigeExpBonus));
         
@@ -728,6 +811,279 @@ updateQuestTimer() {
         this.showNotification('Quests Reset!', 'New daily quests are now available!');
     }
 
+    // Raid System Methods
+    canAccessRaid(raid) {
+        return this.player.level >= raid.requirements.level &&
+               this.player.gold >= raid.requirements.gold &&
+               (!raid.requirements.prestige || this.player.prestigeLevel >= raid.requirements.prestige);
+    }
+    
+    startRaid(raidType, raidId) {
+        const raid = this.raids[raidType].find(r => r.id === raidId);
+        if (!raid || !this.canAccessRaid(raid) || raid.completed) return false;
+        
+        this.currentRaid = { ...raid, currentHp: raid.boss.hp };
+        this.spawnRaidBoss();
+        this.addToCombatLog(`Starting ${raid.name}!`);
+        this.showNotification('Raid Started!', `You are now fighting ${raid.boss.name}!`);
+        
+        return true;
+    }
+    
+    spawnRaidBoss() {
+        if (!this.currentRaid) return;
+        
+        this.currentMonster = {
+            ...this.currentRaid.boss,
+            maxHp: this.currentRaid.currentHp,
+            hp: this.currentRaid.currentHp,
+            isRaidBoss: true,
+            raidType: this.getRaidType()
+        };
+        
+        this.updateMonsterDisplay();
+    }
+    
+    getRaidType() {
+        if (!this.currentRaid) return null;
+        if (this.raids.daily.find(r => r.id === this.currentRaid.id)) return 'daily';
+        if (this.raids.weekly.find(r => r.id === this.currentRaid.id)) return 'weekly';
+        if (this.raids.monthly.find(r => r.id === this.currentRaid.id)) return 'monthly';
+        return null;
+    }
+    
+    completeRaid() {
+        if (!this.currentRaid) return;
+        
+        const raid = this.raids[this.getRaidType()].find(r => r.id === this.currentRaid.id);
+        if (raid) {
+            raid.completed = true;
+            
+            // Give rewards
+            const goldReward = Math.floor(raid.rewards.gold * this.player.goldBonus * (1 + this.player.prestigeGoldBonus));
+            const expReward = Math.floor(raid.rewards.exp * (1 + this.player.prestigeExpBonus));
+            
+            this.player.gold += goldReward;
+            this.player.exp += expReward;
+            
+            this.stats.totalGoldEarned += goldReward;
+            
+            // Add raid items to inventory
+            raid.rewards.items.forEach(itemName => {
+                this.inventory.push({
+                    name: itemName,
+                    emoji: this.getItemEmoji(itemName),
+                    type: this.getItemType(itemName),
+                    damage: this.getItemDamage(itemName),
+                    defense: this.getItemDefense(itemName),
+                    id: Date.now() + Math.random()
+                });
+            });
+            
+            this.addToCombatLog(`Raid completed! Gained ${goldReward} gold and ${expReward} EXP!`);
+            this.showNotification('Raid Complete!', `Defeated ${raid.boss.name} and earned amazing rewards!`);
+            
+            // Check for level up
+            if (this.player.exp >= this.player.expToNext) {
+                this.levelUp();
+            }
+            
+            // Update achievements
+            this.updateAchievementProgress('raid_master', 1);
+            
+            this.currentRaid = null;
+            this.currentMonster = null;
+            
+            // Spawn normal monster after delay
+            setTimeout(() => {
+                this.spawnMonster();
+            }, 2000);
+            
+            this.updateAllDisplays();
+        }
+    }
+    
+    getItemEmoji(itemName) {
+        const itemEmojis = {
+            'Goblin Crown': '👑',
+            'Warlord Axe': '🪓',
+            'Dark Staff': '🪄',
+            'Dragon Scale Armor': '🐲',
+            'Dragon Sword': '⚔️',
+            'Phoenix Feather': '🔥',
+            'Fire Ring': '💍',
+            'World Destroyer Armor': '🌍',
+            'Legendary Sword': '🗡️',
+            'Crown of Power': '👑'
+        };
+        return itemEmojis[itemName] || '📦';
+    }
+    
+    getItemType(itemName) {
+        if (itemName.includes('Sword') || itemName.includes('Axe') || itemName.includes('Staff')) return 'weapon';
+        if (itemName.includes('Armor')) return 'armor';
+        return 'accessory';
+    }
+    
+    getItemDamage(itemName) {
+        const damageMap = {
+            'Warlord Axe': 50,
+            'Dark Staff': 75,
+            'Dragon Sword': 100,
+            'Legendary Sword': 200
+        };
+        return damageMap[itemName] || 0;
+    }
+    
+    getItemDefense(itemName) {
+        const defenseMap = {
+            'Dragon Scale Armor': 50,
+            'World Destroyer Armor': 100
+        };
+        return defenseMap[itemName] || 0;
+    }
+    
+    updateRaidAvailability() {
+        Object.keys(this.raids).forEach(type => {
+            this.raids[type].forEach((raid, index) => {
+                if (index === 0) {
+                    raid.available = this.canAccessRaid(raid);
+                } else {
+                    const prevRaid = this.raids[type][index - 1];
+                    raid.available = prevRaid.completed && this.canAccessRaid(raid);
+                }
+            });
+        });
+    }
+    
+    updateRaidsDisplay() {
+        Object.keys(this.raids).forEach(type => {
+            const raidList = document.getElementById(`${type}-raid-list`);
+            if (raidList) {
+                raidList.innerHTML = '';
+                
+                this.raids[type].forEach(raid => {
+                    const raidEl = document.createElement('div');
+                    const status = raid.completed ? 'completed' : (raid.available ? 'available' : 'locked');
+                    const statusText = raid.completed ? 'Completed' : (raid.available ? 'Available' : 'Locked');
+                    
+                    raidEl.className = `raid ${status}`;
+                    
+                    const requirementsMet = this.canAccessRaid(raid);
+                    const requirementsList = `
+                        <li class="${this.player.level >= raid.requirements.level ? 'met' : ''}">Level ${raid.requirements.level}</li>
+                        <li class="${this.player.gold >= raid.requirements.gold ? 'met' : ''}">${raid.requirements.gold.toLocaleString()} Gold</li>
+                        ${raid.requirements.prestige ? `<li class="${this.player.prestigeLevel >= raid.requirements.prestige ? 'met' : ''}">Prestige Level ${raid.requirements.prestige}</li>` : ''}
+                    `;
+                    
+                    const rewardsList = `
+                        <div class="raid-reward">💰 ${raid.rewards.gold.toLocaleString()}</div>
+                        <div class="raid-reward">⭐ ${raid.rewards.exp.toLocaleString()} EXP</div>
+                        ${raid.rewards.items.map(item => `<div class="raid-reward">${this.getItemEmoji(item)} ${item}</div>`).join('')}
+                    `;
+                    
+                    raidEl.innerHTML = `
+                        <div class="raid-status ${status}">${statusText}</div>
+                        <div class="raid-header">
+                            <div class="raid-title">
+                                <span>${raid.name}</span>
+                                <span class="raid-difficulty ${raid.difficulty}">${raid.difficulty.toUpperCase()}</span>
+                            </div>
+                        </div>
+                        <div class="raid-boss">
+                            <div class="raid-boss-sprite">${raid.boss.emoji}</div>
+                            <div class="raid-boss-info">
+                                <h4>${raid.boss.name}</h4>
+                                <div class="raid-boss-stats">
+                                    HP: ${raid.boss.hp.toLocaleString()} | Damage: ${raid.boss.damage} | Level: ${raid.boss.level}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="raid-requirements">
+                            <h5>Requirements:</h5>
+                            <ul>${requirementsList}</ul>
+                        </div>
+                        <div class="raid-rewards">
+                            <div class="raid-reward-list">${rewardsList}</div>
+                            <button class="raid-start-btn" ${!raid.available || raid.completed ? 'disabled' : ''}>
+                                ${raid.completed ? 'Completed' : (raid.available ? 'Start Raid' : 'Locked')}
+                            </button>
+                        </div>
+                    `;
+                    
+                    const startBtn = raidEl.querySelector('.raid-start-btn');
+                    startBtn.addEventListener('click', () => {
+                        if (this.startRaid(type, raid.id)) {
+                            this.createParticles(raidEl.getBoundingClientRect().left + raidEl.getBoundingClientRect().width/2, 
+                                               raidEl.getBoundingClientRect().top + raidEl.getBoundingClientRect().height/2);
+                        }
+                    });
+                    
+                    raidList.appendChild(raidEl);
+                });
+            }
+        });
+    }
+    
+    updateRaidTimers() {
+        const now = Date.now();
+        
+        // Daily raid timer
+        const timeUntilDailyReset = 24 * 60 * 60 * 1000 - (now - this.lastDailyRaidReset) % (24 * 60 * 60 * 1000);
+        const dailyHours = Math.floor(timeUntilDailyReset / (60 * 60 * 1000));
+        const dailyMinutes = Math.floor((timeUntilDailyReset % (60 * 60 * 1000)) / (60 * 1000));
+        const dailySeconds = Math.floor((timeUntilDailyReset % (60 * 1000)) / 1000);
+        
+        const dailyTimer = document.getElementById('daily-raid-timer');
+        if (dailyTimer) {
+            dailyTimer.textContent = `${dailyHours.toString().padStart(2, '0')}:${dailyMinutes.toString().padStart(2, '0')}:${dailySeconds.toString().padStart(2, '0')}`;
+        }
+        
+        // Weekly raid timer
+        const timeUntilWeeklyReset = 7 * 24 * 60 * 60 * 1000 - (now - this.lastWeeklyRaidReset) % (7 * 24 * 60 * 60 * 1000);
+        const weeklyDays = Math.floor(timeUntilWeeklyReset / (24 * 60 * 60 * 1000));
+        const weeklyHours = Math.floor((timeUntilWeeklyReset % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+        const weeklyMinutes = Math.floor((timeUntilWeeklyReset % (60 * 60 * 1000)) / (60 * 1000));
+        
+        const weeklyTimer = document.getElementById('weekly-raid-timer');
+        if (weeklyTimer) {
+            weeklyTimer.textContent = `${weeklyDays}d ${weeklyHours.toString().padStart(2, '0')}:${weeklyMinutes.toString().padStart(2, '0')}`;
+        }
+        
+        // Monthly raid timer
+        const timeUntilMonthlyReset = 30 * 24 * 60 * 60 * 1000 - (now - this.lastMonthlyRaidReset) % (30 * 24 * 60 * 60 * 1000);
+        const monthlyDays = Math.floor(timeUntilMonthlyReset / (24 * 60 * 60 * 1000));
+        const monthlyHours = Math.floor((timeUntilMonthlyReset % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+        const monthlyMinutes = Math.floor((timeUntilMonthlyReset % (60 * 60 * 1000)) / (60 * 1000));
+        
+        const monthlyTimer = document.getElementById('monthly-raid-timer');
+        if (monthlyTimer) {
+            monthlyTimer.textContent = `${monthlyDays}d ${monthlyHours.toString().padStart(2, '0')}:${monthlyMinutes.toString().padStart(2, '0')}`;
+        }
+    }
+    
+    resetRaid(type) {
+        const resetMap = {
+            'daily': 'lastDailyRaidReset',
+            'weekly': 'lastWeeklyRaidReset',
+            'monthly': 'lastMonthlyRaidReset'
+        };
+        
+        this[resetMap[type]] = Date.now();
+        this.raids[type].forEach(raid => {
+            raid.completed = false;
+            raid.available = false;
+        });
+        
+        // Make first raid available if requirements are met
+        if (this.raids[type].length > 0) {
+            this.raids[type][0].available = this.canAccessRaid(this.raids[type][0]);
+        }
+        
+        this.updateRaidsDisplay();
+        this.showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} Raids Reset!`, 'New raids are now available!');
+    }
+
     // Prestige System Methods
     canPrestige() {
         return this.player.level >= 50 && 
@@ -939,10 +1295,14 @@ updateQuestTimer() {
             inventory: this.inventory,
             achievements: this.achievements,
             quests: this.quests,
+            raids: this.raids,
             stats: this.stats,
             tutorial: this.tutorial,
             gameStartTime: this.gameStartTime,
-            lastQuestReset: this.lastQuestReset
+            lastQuestReset: this.lastQuestReset,
+            lastDailyRaidReset: this.lastDailyRaidReset,
+            lastWeeklyRaidReset: this.lastWeeklyRaidReset,
+            lastMonthlyRaidReset: this.lastMonthlyRaidReset
         };
         
         localStorage.setItem('idleRpgSave', JSON.stringify(saveData));
@@ -960,10 +1320,14 @@ updateQuestTimer() {
             this.inventory = data.inventory || this.inventory;
             this.achievements = data.achievements || this.achievements;
             this.quests = data.quests || this.quests;
+            this.raids = data.raids || this.raids;
             this.stats = data.stats || this.stats;
             this.tutorial = data.tutorial || this.tutorial;
             this.gameStartTime = data.gameStartTime || this.gameStartTime;
             this.lastQuestReset = data.lastQuestReset || this.lastQuestReset;
+            this.lastDailyRaidReset = data.lastDailyRaidReset || this.lastDailyRaidReset;
+            this.lastWeeklyRaidReset = data.lastWeeklyRaidReset || this.lastWeeklyRaidReset;
+            this.lastMonthlyRaidReset = data.lastMonthlyRaidReset || this.lastMonthlyRaidReset;
             
             // Reapply skill effects
             this.player.autoAttack = this.skills['auto-attack'].level > 0;
@@ -993,6 +1357,8 @@ updateQuestTimer() {
         this.updateInventoryDisplay();
         this.updateAchievementsDisplay();
         this.updateQuestsDisplay();
+        this.updateRaidAvailability();
+        this.updateRaidsDisplay();
         this.updatePrestigeDisplay();
         this.updateStatsDisplay();
     }
@@ -1151,6 +1517,43 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeSinceLastReset = now - game.lastQuestReset;
         if (timeSinceLastReset >= 24 * 60 * 60 * 1000) {
             game.resetQuests();
+        }
+    }, 60000);
+    
+    // Raid category switching
+    document.querySelectorAll('.raid-category').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.raid-category').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.raid-content').forEach(c => c.style.display = 'none');
+            
+            btn.classList.add('active');
+            const raidType = btn.dataset.raidType;
+            document.getElementById(`${raidType}-raids`).style.display = 'block';
+        });
+    });
+    
+    // Raid timer updates (every second)
+    setInterval(() => {
+        game.updateRaidTimers();
+    }, 1000);
+    
+    // Raid reset checks (every minute)
+    setInterval(() => {
+        const now = Date.now();
+        
+        // Daily raid reset
+        if (now - game.lastDailyRaidReset >= 24 * 60 * 60 * 1000) {
+            game.resetRaid('daily');
+        }
+        
+        // Weekly raid reset
+        if (now - game.lastWeeklyRaidReset >= 7 * 24 * 60 * 60 * 1000) {
+            game.resetRaid('weekly');
+        }
+        
+        // Monthly raid reset
+        if (now - game.lastMonthlyRaidReset >= 30 * 24 * 60 * 60 * 1000) {
+            game.resetRaid('monthly');
         }
     }, 60000);
     

@@ -118,6 +118,7 @@
                 <button class="tab-btn active" data-tab="skills">Skills</button>
                 <button class="tab-btn" data-tab="inventory">Inventory</button>
                 <button class="tab-btn" data-tab="shop">Shop</button>
+                <button class="tab-btn" data-tab="raids">Raids</button>
                 <button class="tab-btn" data-tab="achievements">Achievements</button>
                 <button class="tab-btn" data-tab="prestige">Prestige</button>
                 <button class="tab-btn" data-tab="quests">Quests</button>
@@ -189,6 +190,46 @@
                     </div>
                     <div class="shop-items" id="shop-items">
                         <!-- Shop items will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Raids tab -->
+                <div class="tab-panel" id="raids-panel">
+                    <h2>Raid System</h2>
+                    <div class="raid-categories">
+                        <button class="raid-category active" data-raid-type="daily">Daily Raids</button>
+                        <button class="raid-category" data-raid-type="weekly">Weekly Raids</button>
+                        <button class="raid-category" data-raid-type="monthly">Monthly Raids</button>
+                    </div>
+                    
+                    <!-- Daily Raids -->
+                    <div class="raid-content" id="daily-raids">
+                        <div class="raid-timer">
+                            <h3>Next Daily Reset: <span id="daily-raid-timer">23:45:12</span></h3>
+                        </div>
+                        <div class="raid-list" id="daily-raid-list">
+                            <!-- Daily raids will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Weekly Raids -->
+                    <div class="raid-content" id="weekly-raids" style="display: none;">
+                        <div class="raid-timer">
+                            <h3>Next Weekly Reset: <span id="weekly-raid-timer">6d 23:45:12</span></h3>
+                        </div>
+                        <div class="raid-list" id="weekly-raid-list">
+                            <!-- Weekly raids will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Monthly Raids -->
+                    <div class="raid-content" id="monthly-raids" style="display: none;">
+                        <div class="raid-timer">
+                            <h3>Next Monthly Reset: <span id="monthly-raid-timer">29d 23:45:12</span></h3>
+                        </div>
+                        <div class="raid-list" id="monthly-raid-list">
+                            <!-- Monthly raids will be populated here -->
+                        </div>
                     </div>
                 </div>
 

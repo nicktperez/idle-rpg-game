@@ -343,28 +343,34 @@ class GameState {
         if (quickAttackBtn && !quickAttackBtn.hasAttribute('data-listeners-setup')) {
             quickAttackBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('Quick attack clicked!');
+                e.stopPropagation();
+                console.log('Quick attack button clicked!');
                 this.attack('quick');
             });
             quickAttackBtn.setAttribute('data-listeners-setup', 'true');
+            console.log('Quick attack button listener set up');
         }
         
         if (normalAttackBtn && !normalAttackBtn.hasAttribute('data-listeners-setup')) {
             normalAttackBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('Normal attack clicked!');
+                e.stopPropagation();
+                console.log('Normal attack button clicked!');
                 this.attack('normal');
             });
             normalAttackBtn.setAttribute('data-listeners-setup', 'true');
+            console.log('Normal attack button listener set up');
         }
         
         if (powerAttackBtn && !powerAttackBtn.hasAttribute('data-listeners-setup')) {
             powerAttackBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('Power attack clicked!');
+                e.stopPropagation();
+                console.log('Power attack button clicked!');
                 this.attack('power');
             });
             powerAttackBtn.setAttribute('data-listeners-setup', 'true');
+            console.log('Power attack button listener set up');
         }
         
         // Add click listeners to consumable items
@@ -374,19 +380,23 @@ class GameState {
         if (healPotionBtn && !healPotionBtn.hasAttribute('data-listeners-setup')) {
             healPotionBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('Heal potion clicked!');
+                e.stopPropagation();
+                console.log('Heal potion button clicked!');
                 this.useConsumable('healPotion');
             });
             healPotionBtn.setAttribute('data-listeners-setup', 'true');
+            console.log('Heal potion button listener set up');
         }
         
         if (poisonPotionBtn && !poisonPotionBtn.hasAttribute('data-listeners-setup')) {
             poisonPotionBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('Poison potion clicked!');
+                e.stopPropagation();
+                console.log('Poison potion button clicked!');
                 this.useConsumable('poisonPotion');
             });
             poisonPotionBtn.setAttribute('data-listeners-setup', 'true');
+            console.log('Poison potion button listener set up');
         }
         
         // Update consumable displays
@@ -398,14 +408,30 @@ class GameState {
             battleSection.addEventListener('click', (e) => {
                 console.log('Global battle click detected on:', e.target);
                 
-                // Check if clicking on monster sprite, hero sprite, or attack button
+                // Check if clicking on monster sprite, hero sprite, or attack buttons
                 if (e.target.closest('#monster-sprite') || 
                     e.target.closest('.monster-sprite') || 
                     e.target.closest('#player-sprite') ||
-                    e.target.id === 'attack-button') {
+                    e.target.closest('.attack-btn') ||
+                    e.target.closest('.item-btn')) {
                     e.preventDefault();
-                    console.log('Battle area clicked - attacking!');
-                    this.attack();
+                    console.log('Battle area clicked - element:', e.target);
+                    
+                    // Handle different button types
+                    if (e.target.closest('.quick-attack')) {
+                        this.attack('quick');
+                    } else if (e.target.closest('.normal-attack')) {
+                        this.attack('normal');
+                    } else if (e.target.closest('.power-attack')) {
+                        this.attack('power');
+                    } else if (e.target.closest('.heal-potion')) {
+                        this.useConsumable('healPotion');
+                    } else if (e.target.closest('.poison-potion')) {
+                        this.useConsumable('poisonPotion');
+                    } else {
+                        // Default to normal attack for sprite clicks
+                        this.attack('normal');
+                    }
                 }
             });
             battleSection.setAttribute('data-global-listeners-setup', 'true');

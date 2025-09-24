@@ -1998,10 +1998,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            // Fade out, clear, then fade in to prevent white flash
-            shopContainer.style.opacity = '0';
-            setTimeout(() => {
-                shopContainer.innerHTML = '';
+            // Clear content immediately without fade to prevent white flash
+            shopContainer.innerHTML = '';
             
             // Use the shopItems data from the global constant
             if (!shopItems || !shopItems[category]) {
@@ -2049,11 +2047,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 shopContainer.appendChild(itemEl);
             });
             
-            // Fade back in after items are added
-            setTimeout(() => {
-                shopContainer.style.opacity = '1';
-            }, 50);
-            }, 100); // End of the first setTimeout
         });
     });
     

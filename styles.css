@@ -503,7 +503,7 @@ body::before {
 }
 
 .battle-center {
-    flex: 0 0 300px;
+    flex: 0 0 400px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -534,10 +534,165 @@ body::before {
     margin-bottom: 20px;
 }
 
-.attack-button:hover {
-    background: linear-gradient(135deg, #ffd700, #d4af37);
+/* Attack Types */
+.attack-types {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.attack-btn {
+    background: linear-gradient(135deg, #654321, #8b4513);
+    border: 2px solid #d4af37;
+    border-radius: 10px;
+    padding: 8px 12px;
+    color: #d4af37;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-width: 80px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.attack-btn:hover {
+    background: linear-gradient(135deg, #8b4513, #654321);
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+}
+
+.attack-btn:active {
+    transform: translateY(0);
+}
+
+.quick-attack {
+    border-color: #00ff00;
+    color: #90ee90;
+}
+
+.quick-attack:hover {
+    background: linear-gradient(135deg, #228b22, #006400);
+    box-shadow: 0 5px 15px rgba(0, 255, 0, 0.4);
+}
+
+.normal-attack {
+    border-color: #d4af37;
+    color: #ffd700;
+}
+
+.normal-attack:hover {
+    background: linear-gradient(135deg, #b8860b, #8b7355);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+}
+
+.power-attack {
+    border-color: #ff4500;
+    color: #ff6b6b;
+}
+
+.power-attack:hover {
+    background: linear-gradient(135deg, #8b0000, #654321);
+    box-shadow: 0 5px 15px rgba(255, 69, 0, 0.4);
+}
+
+.attack-icon {
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+}
+
+.attack-name {
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 1px;
+}
+
+.attack-desc {
+    font-size: 0.6rem;
+    opacity: 0.8;
+}
+
+/* Consumables */
+.consumables {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+    justify-content: center;
+}
+
+.item-btn {
+    background: linear-gradient(135deg, #4b0082, #6a0dad);
+    border: 2px solid #9370db;
+    border-radius: 10px;
+    padding: 8px 12px;
+    color: #e6e6fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-width: 80px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.item-btn:hover {
+    background: linear-gradient(135deg, #6a0dad, #4b0082);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(147, 112, 219, 0.4);
+}
+
+.item-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.item-btn:disabled:hover {
+    background: linear-gradient(135deg, #4b0082, #6a0dad);
+    transform: none;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.heal-potion {
+    border-color: #00ff00;
+    color: #90ee90;
+}
+
+.heal-potion:hover {
+    background: linear-gradient(135deg, #228b22, #006400);
+    box-shadow: 0 5px 15px rgba(0, 255, 0, 0.4);
+}
+
+.poison-potion {
+    border-color: #ff4500;
+    color: #ff6b6b;
+}
+
+.poison-potion:hover {
+    background: linear-gradient(135deg, #8b0000, #654321);
+    box-shadow: 0 5px 15px rgba(255, 69, 0, 0.4);
+}
+
+.item-icon {
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+}
+
+.item-name {
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 1px;
+}
+
+.item-count {
+    font-size: 0.7rem;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 1px 4px;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 16px;
+    text-align: center;
 }
 
 .combat-log {

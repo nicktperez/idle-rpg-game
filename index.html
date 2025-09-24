@@ -575,9 +575,45 @@
                     <!-- Battle Center -->
                     <div class="battle-center">
                         <div class="vs-indicator">VS</div>
-                        <div class="attack-button" id="attack-button">⚔️ ATTACK ⚔️</div>
+                        
+                        <!-- Attack Types -->
+                        <div class="attack-types">
+                            <button class="attack-btn quick-attack" id="quick-attack-btn">
+                                <div class="attack-icon">⚡</div>
+                                <div class="attack-name">Quick Attack</div>
+                                <div class="attack-desc">Fast, low damage</div>
+                            </button>
+                            
+                            <button class="attack-btn normal-attack" id="normal-attack-btn">
+                                <div class="attack-icon">⚔️</div>
+                                <div class="attack-name">Normal Attack</div>
+                                <div class="attack-desc">Standard damage</div>
+                            </button>
+                            
+                            <button class="attack-btn power-attack" id="power-attack-btn">
+                                <div class="attack-icon">💥</div>
+                                <div class="attack-name">Power Attack</div>
+                                <div class="attack-desc">Slow, high damage</div>
+                            </button>
+                        </div>
+                        
+                        <!-- Consumable Items -->
+                        <div class="consumables">
+                            <button class="item-btn heal-potion" id="heal-potion-btn">
+                                <div class="item-icon">🧪</div>
+                                <div class="item-name">Heal Potion</div>
+                                <div class="item-count" id="heal-potion-count">3</div>
+                            </button>
+                            
+                            <button class="item-btn poison-potion" id="poison-potion-btn">
+                                <div class="item-icon">☠️</div>
+                                <div class="item-name">Poison</div>
+                                <div class="item-count" id="poison-potion-count">2</div>
+                            </button>
+                        </div>
+                        
                         <div class="combat-log" id="combat-log">
-                            <p>Click ATTACK to fight!</p>
+                            <p>Choose an attack or use an item!</p>
                         </div>
                     </div>
                     

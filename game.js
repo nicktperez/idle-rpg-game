@@ -20,6 +20,14 @@ class GameState {
             prestigeExpBonus: 0
         };
         
+        // Consumable items
+        this.consumables = {
+            healPotion: 3,
+            poisonPotion: 2,
+            strengthPotion: 1,
+            defensePotion: 1
+        };
+        
         // Enhanced statistics tracking
         this.stats = {
             monstersDefeated: 0,
@@ -327,17 +335,62 @@ class GameState {
     setupBattleEventListeners() {
         console.log('Setting up battle event listeners...');
         
-        // Add click listener to attack button
-        const attackButton = document.getElementById('attack-button');
-        if (attackButton && !attackButton.hasAttribute('data-listeners-setup')) {
-            attackButton.addEventListener('click', (e) => {
+        // Add click listeners to attack buttons
+        const quickAttackBtn = document.getElementById('quick-attack-btn');
+        const normalAttackBtn = document.getElementById('normal-attack-btn');
+        const powerAttackBtn = document.getElementById('power-attack-btn');
+        
+        if (quickAttackBtn && !quickAttackBtn.hasAttribute('data-listeners-setup')) {
+            quickAttackBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('Attack button clicked - attacking!');
-                this.attack();
+                console.log('Quick attack clicked!');
+                this.attack('quick');
             });
-            attackButton.setAttribute('data-listeners-setup', 'true');
-            console.log('Attack button event listener set up');
+            quickAttackBtn.setAttribute('data-listeners-setup', 'true');
         }
+        
+        if (normalAttackBtn && !normalAttackBtn.hasAttribute('data-listeners-setup')) {
+            normalAttackBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Normal attack clicked!');
+                this.attack('normal');
+            });
+            normalAttackBtn.setAttribute('data-listeners-setup', 'true');
+        }
+        
+        if (powerAttackBtn && !powerAttackBtn.hasAttribute('data-listeners-setup')) {
+            powerAttackBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Power attack clicked!');
+                this.attack('power');
+            });
+            powerAttackBtn.setAttribute('data-listeners-setup', 'true');
+        }
+        
+        // Add click listeners to consumable items
+        const healPotionBtn = document.getElementById('heal-potion-btn');
+        const poisonPotionBtn = document.getElementById('poison-potion-btn');
+        
+        if (healPotionBtn && !healPotionBtn.hasAttribute('data-listeners-setup')) {
+            healPotionBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Heal potion clicked!');
+                this.useConsumable('healPotion');
+            });
+            healPotionBtn.setAttribute('data-listeners-setup', 'true');
+        }
+        
+        if (poisonPotionBtn && !poisonPotionBtn.hasAttribute('data-listeners-setup')) {
+            poisonPotionBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Poison potion clicked!');
+                this.useConsumable('poisonPotion');
+            });
+            poisonPotionBtn.setAttribute('data-listeners-setup', 'true');
+        }
+        
+        // Update consumable displays
+        this.updateConsumableDisplays();
         
         // Add global click listener as fallback - listen for clicks on battle arena elements
         const battleSection = document.getElementById('battle-area');
@@ -683,6 +736,55 @@ class GameState {
         console.log('Floating damage shown:', damage, 'Critical:', isCrit);
     }
     
+    useConsumable(itemType) {
+        if (this.consumables[itemType] <= 0) {
+            this.addToCombatLog(`No ${itemType} remaining!`);
+            return;
+        }
+        
+        switch (itemType) {
+            case 'healPotion':
+                const healAmount = Math.floor(this.player.maxHp * 0.5); // Heal 50% of max HP
+                this.player.hp = Math.min(this.player.maxHp, this.player.hp + healAmount);
+                this.consumables.healPotion--;
+                this.addToCombatLog(`Used Heal Potion! Restored ${healAmount} HP.`);
+                this.showFloatingDamage(-healAmount, false, 'player'); // Negative for healing
+                break;
+                
+            case 'poisonPotion':
+                if (this.currentMonster) {
+                    const poisonDamage = Math.floor(this.currentMonster.maxHp * 0.3); // 30% of monster max HP
+                    this.currentMonster.hp -= poisonDamage;
+                    this.consumables.poisonPotion--;
+                    this.addToCombatLog(`Used Poison! Dealt ${poisonDamage} poison damage!`);
+                    this.showFloatingDamage(poisonDamage, false, 'monster');
+                    this.updateMonsterDisplay();
+                } else {
+                    this.addToCombatLog('No monster to poison!');
+                    return;
+                }
+                break;
+        }
+        
+        this.updateConsumableDisplays();
+        this.updatePlayerDisplay();
+    }
+    
+    updateConsumableDisplays() {
+        const healCount = document.getElementById('heal-potion-count');
+        const poisonCount = document.getElementById('poison-potion-count');
+        
+        if (healCount) {
+            healCount.textContent = this.consumables.healPotion;
+            document.getElementById('heal-potion-btn').disabled = this.consumables.healPotion <= 0;
+        }
+        
+        if (poisonCount) {
+            poisonCount.textContent = this.consumables.poisonPotion;
+            document.getElementById('poison-potion-btn').disabled = this.consumables.poisonPotion <= 0;
+        }
+    }
+    
     updateHeroSprite() {
         const playerSprite = document.getElementById('player-sprite');
         if (!playerSprite) return;
@@ -739,8 +841,8 @@ class GameState {
         document.getElementById('player-gems').textContent = this.player.gems;
     }
     
-    attack() {
-        console.log('Attack function called');
+    attack(attackType = 'normal') {
+        console.log('Attack function called with type:', attackType);
         console.log('Current monster:', this.currentMonster);
         
         if (!this.currentMonster || this.currentMonster.hp <= 0) {
@@ -758,7 +860,21 @@ class GameState {
         this.showCombatEffects();
         
         const weaponDamage = this.equipment.weapon ? this.equipment.weapon.damage : 0;
-        const baseDamage = this.player.strength + weaponDamage;
+        let baseDamage = this.player.strength + weaponDamage;
+        
+        // Apply attack type modifiers
+        switch (attackType) {
+            case 'quick':
+                baseDamage = Math.floor(baseDamage * 0.7); // 70% damage, faster
+                break;
+            case 'power':
+                baseDamage = Math.floor(baseDamage * 1.5); // 150% damage, slower
+                break;
+            case 'normal':
+            default:
+                // 100% damage
+                break;
+        }
         
         // Critical hit calculation
         const isCrit = Math.random() < this.player.critChance;
@@ -771,6 +887,7 @@ class GameState {
         // Show damage after animation
         setTimeout(() => {
             this.currentMonster.hp -= damage;
+            this.updateMonsterDisplay(); // Update health bar immediately
             this.showFloatingDamage(damage, isCrit, 'monster');
             this.showDamageNumber(damage, isCrit);
             this.playSound(isCrit ? 'crit' : 'attack');

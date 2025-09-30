@@ -2218,6 +2218,30 @@ body::before {
     border-color: rgba(255, 255, 255, 0.4) !important;
 }
 
+.stats-btn {
+    background: linear-gradient(135deg, #f093fb, #f5576c) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.close-btn {
+    background: linear-gradient(135deg, #4ecdc4, #44a08d);
+    border: none;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
 /* Tooltips */
 .tooltip {
     position: relative;

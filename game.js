@@ -1,6 +1,9 @@
 // Game state and configuration
 class GameState {
     constructor() {
+        // Cache frequently accessed DOM elements
+        this.domCache = {};
+        
         this.player = {
             level: 1,
             hp: 100,
@@ -174,8 +177,32 @@ class GameState {
         this.sounds = {};
         
         this.initializeAudio();
+        this.cacheDOM();
         this.spawnMonster();
         this.startGameLoop();
+    }
+    
+    // Cache DOM elements for better performance
+    cacheDOM() {
+        this.domCache = {
+            playerLevel: document.getElementById('player-level'),
+            playerHp: document.getElementById('player-hp'),
+            playerMaxHp: document.getElementById('player-max-hp'),
+            playerGold: document.getElementById('player-gold'),
+            playerGems: document.getElementById('player-gems'),
+            playerExp: document.getElementById('player-exp'),
+            playerExpToNext: document.getElementById('player-exp-to-next'),
+            playerDamage: document.getElementById('player-damage'),
+            playerDefense: document.getElementById('player-defense'),
+            monsterSprite: document.getElementById('monster-sprite'),
+            monsterName: document.getElementById('monster-name'),
+            monsterHpFill: document.getElementById('monster-hp-fill'),
+            monsterHpText: document.getElementById('monster-hp-text'),
+            playerSprite: document.getElementById('player-sprite'),
+            combatLog: document.getElementById('combat-log'),
+            hpFill: document.getElementById('hp-fill'),
+            expFill: document.getElementById('exp-fill')
+        };
     }
     
     initializeAchievements() {
@@ -590,10 +617,10 @@ class GameState {
     }
     
     updateMonsterDisplay() {
-        const monsterSprite = document.getElementById('monster-sprite');
-        const monsterName = document.getElementById('monster-name');
-        const monsterHpFill = document.getElementById('monster-hp-fill');
-        const monsterHpText = document.getElementById('monster-hp-text');
+        const monsterSprite = this.domCache.monsterSprite || document.getElementById('monster-sprite');
+        const monsterName = this.domCache.monsterName || document.getElementById('monster-name');
+        const monsterHpFill = this.domCache.monsterHpFill || document.getElementById('monster-hp-fill');
+        const monsterHpText = this.domCache.monsterHpText || document.getElementById('monster-hp-text');
         
         console.log('Updating monster display:', this.currentMonster?.name, 'HP:', this.currentMonster?.hp, '/', this.currentMonster?.maxHp);
         
@@ -855,16 +882,42 @@ class GameState {
     }
     
     updatePlayerDisplay() {
-        document.getElementById('player-level').textContent = this.player.level;
-        document.getElementById('player-hp').textContent = this.player.hp;
-        document.getElementById('player-max-hp').textContent = this.player.maxHp;
+        if (this.domCache.playerLevel) this.domCache.playerLevel.textContent = this.player.level;
+        if (this.domCache.playerHp) this.domCache.playerHp.textContent = Math.floor(this.player.hp);
+        if (this.domCache.playerMaxHp) this.domCache.playerMaxHp.textContent = this.player.maxHp;
+        
+        // Update HP bar
+        if (this.domCache.hpFill) {
+            const hpPercent = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
+            this.domCache.hpFill.style.width = hpPercent + '%';
+        }
+        
+        // Update EXP bar
+        if (this.domCache.expFill) {
+            const expPercent = Math.max(0, Math.min(100, (this.player.exp / this.player.expToNext) * 100));
+            this.domCache.expFill.style.width = expPercent + '%';
+        }
+        
+        if (this.domCache.playerExp) this.domCache.playerExp.textContent = Math.floor(this.player.exp);
+        if (this.domCache.playerExpToNext) this.domCache.playerExpToNext.textContent = this.player.expToNext;
         
         // Update hero sprite
         this.updateHeroSprite();
-        document.getElementById('player-strength').textContent = this.player.strength;
-        document.getElementById('player-defense').textContent = this.player.defense;
-        document.getElementById('player-gold').textContent = this.player.gold.toLocaleString();
-        document.getElementById('player-gems').textContent = this.player.gems;
+        
+        const playerDamage = document.getElementById('player-damage');
+        const playerDefense = document.getElementById('player-defense');
+        if (playerDamage) playerDamage.textContent = this.player.strength;
+        if (playerDefense) playerDefense.textContent = this.player.defense;
+        
+        if (this.domCache.playerGold) this.domCache.playerGold.textContent = this.formatNumber(this.player.gold);
+        if (this.domCache.playerGems) this.domCache.playerGems.textContent = this.player.gems;
+    }
+    
+    // Helper to format large numbers
+    formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        return Math.floor(num).toLocaleString();
     }
     
     attack(attackType = 'normal') {
@@ -1136,14 +1189,24 @@ class GameState {
             this.stats.goldSpent += item.cost;
             this.stats.itemsPurchased++;
             
-            // Add to inventory
-            this.inventory.push({ ...item, id: Date.now() });
+            // Handle consumables differently
+            if (item.type === 'consumable' && item.consumableType) {
+                // Add to consumable count
+                if (this.consumables[item.consumableType] !== undefined) {
+                    this.consumables[item.consumableType]++;
+                    this.updateConsumableDisplays();
+                    this.showNotification('Item Purchased', `Bought ${item.name}!`);
+                }
+            } else {
+                // Add equipment to inventory
+                this.inventory.push({ ...item, id: Date.now() });
+                this.updateInventoryDisplay();
+                this.updateAchievementProgress('equipment_collector', 1);
+                this.updateQuestProgress('buy_equipment', 1);
+            }
             
             this.playSound('purchase');
-            this.updateInventoryDisplay();
             this.updatePlayerDisplay();
-            this.updateAchievementProgress('equipment_collector', 1);
-            this.updateQuestProgress('buy_equipment', 1);
             
             return true;
         }
@@ -1809,9 +1872,11 @@ updateQuestTimer() {
             this.combatLog.shift();
         }
         
-        const combatLog = document.getElementById('combat-log');
-        combatLog.innerHTML = this.combatLog.map(msg => `<div>${msg}</div>`).join('');
-        combatLog.scrollTop = combatLog.scrollHeight;
+        const combatLog = this.domCache.combatLog || document.getElementById('combat-log');
+        if (combatLog) {
+            combatLog.innerHTML = this.combatLog.map(msg => `<div>${msg}</div>`).join('');
+            combatLog.scrollTop = combatLog.scrollHeight;
+        }
     }
     
     createParticles(x, y, count = 10) {
@@ -1833,24 +1898,43 @@ updateQuestTimer() {
     }
     
     startGameLoop() {
-        setInterval(() => {
+        // Optimize game loop to run less frequently
+        let lastUpdate = Date.now();
+        
+        const gameLoop = () => {
+            const now = Date.now();
+            const deltaTime = now - lastUpdate;
+            
+            // Only update every 100ms
+            if (deltaTime < 100) {
+                requestAnimationFrame(gameLoop);
+                return;
+            }
+            
+            lastUpdate = now;
+            
             // Auto attack
-            if (this.player.autoAttack && Date.now() - this.lastAutoAttack > this.autoAttackInterval) {
-                this.attack();
-                this.lastAutoAttack = Date.now();
+            if (this.player.autoAttack && now - this.lastAutoAttack > this.autoAttackInterval) {
+                if (this.currentLocation === 'battle') {
+                    this.attack();
+                }
+                this.lastAutoAttack = now;
             }
             
             // Health regeneration
-            if (this.player.healthRegen > 0 && Date.now() - this.lastHealthRegen > this.healthRegenInterval) {
+            if (this.player.healthRegen > 0 && now - this.lastHealthRegen > this.healthRegenInterval) {
                 if (this.player.hp < this.player.maxHp) {
                     const regenAmount = Math.min(this.player.healthRegen, this.player.maxHp - this.player.hp);
                     this.player.hp += regenAmount;
                     this.updatePlayerDisplay();
-                    this.showDamageNumber(regenAmount, false, true);
                 }
-                this.lastHealthRegen = Date.now();
+                this.lastHealthRegen = now;
             }
-        }, 100);
+            
+            requestAnimationFrame(gameLoop);
+        };
+        
+        requestAnimationFrame(gameLoop);
     }
     
     saveGame() {
@@ -1953,6 +2037,12 @@ const shopItems = {
         { name: 'Defense Amulet', emoji: '🔮', defense: 3, cost: 150, type: 'accessory', description: 'Boosts defense' },
         { name: 'Gold Ring', emoji: '💰', goldBonus: 0.2, cost: 500, type: 'accessory', description: 'Increases gold gain' },
         { name: 'Lucky Charm', emoji: '🍀', critChance: 0.1, cost: 800, type: 'accessory', description: 'Increases critical hit chance' }
+    ],
+    consumables: [
+        { name: 'Heal Potion', emoji: '🧪', cost: 50, type: 'consumable', consumableType: 'healPotion', description: 'Restores 50% of max HP' },
+        { name: 'Poison Vial', emoji: '☠️', cost: 75, type: 'consumable', consumableType: 'poisonPotion', description: 'Deals 30% of monster max HP' },
+        { name: 'Strength Potion', emoji: '💪', cost: 100, type: 'consumable', consumableType: 'strengthPotion', description: 'Temporarily increases damage' },
+        { name: 'Defense Potion', emoji: '🛡️', cost: 100, type: 'consumable', consumableType: 'defensePotion', description: 'Temporarily increases defense' }
     ]
 };
 
@@ -2088,6 +2178,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
+    // Stats panel
+    const statsBtn = document.getElementById('stats-btn');
+    const statsClose = document.getElementById('stats-close');
+    
+    if (statsBtn) {
+        statsBtn.addEventListener('click', () => {
+            const statsPanel = document.getElementById('stats-panel');
+            if (statsPanel) {
+                statsPanel.style.display = 'block';
+                game.updateStatsDisplay();
+            }
+        });
+    }
+    
+    if (statsClose) {
+        statsClose.addEventListener('click', () => {
+            const statsPanel = document.getElementById('stats-panel');
+            if (statsPanel) statsPanel.style.display = 'none';
+        });
+    }
     
     // Prestige system
     document.getElementById('prestige-btn').addEventListener('click', () => {

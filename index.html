@@ -141,6 +141,132 @@
             </div>
         </header>
 
+        <!-- SVG Icon System -->
+        <svg id="icon-defs" style="display: none;">
+            <defs>
+                <!-- Weapon Icons -->
+                <g id="icon-sword">
+                    <path d="M20 40 L40 10 L60 40" stroke="#C0C0C0" stroke-width="3" fill="none"/>
+                    <rect x="37" y="38" width="6" height="20" fill="#C0C0C0"/>
+                    <rect x="30" y="56" width="20" height="4" fill="#8B4513" rx="2"/>
+                    <circle cx="40" cy="60" r="3" fill="#FFD700"/>
+                </g>
+                
+                <g id="icon-dagger">
+                    <path d="M30 45 L40 15 L50 45" stroke="#A0A0A0" stroke-width="2" fill="none"/>
+                    <rect x="38" y="43" width="4" height="15" fill="#A0A0A0"/>
+                    <rect x="35" y="56" width="10" height="3" fill="#654321" rx="1"/>
+                </g>
+                
+                <g id="icon-axe">
+                    <rect x="38" y="30" width="4" height="30" fill="#8B4513"/>
+                    <path d="M25 25 Q40 20 55 25 L50 40 Q40 35 30 40 Z" fill="#708090" stroke="#2F4F4F" stroke-width="2"/>
+                </g>
+                
+                <!-- Armor Icons -->
+                <g id="icon-shield">
+                    <path d="M40 10 Q50 15 50 25 L50 45 Q50 55 40 60 Q30 55 30 45 L30 25 Q30 15 40 10 Z" 
+                          fill="#4169E1" stroke="#0000CD" stroke-width="2"/>
+                    <path d="M40 20 L40 50 M30 35 L50 35" stroke="#FFD700" stroke-width="2"/>
+                </g>
+                
+                <g id="icon-armor">
+                    <rect x="25" y="20" width="30" height="35" rx="5" fill="#708090" stroke="#2F4F4F" stroke-width="2"/>
+                    <rect x="32" y="25" width="16" height="25" fill="#4169E1" opacity="0.5"/>
+                    <circle cx="40" cy="30" r="3" fill="#FFD700"/>
+                </g>
+                
+                <!-- Accessory Icons -->
+                <g id="icon-ring">
+                    <circle cx="40" cy="40" r="12" fill="none" stroke="#FFD700" stroke-width="4"/>
+                    <circle cx="40" cy="35" r="4" fill="#FF0000"/>
+                </g>
+                
+                <g id="icon-amulet">
+                    <circle cx="40" cy="35" r="8" fill="#9370DB" stroke="#4B0082" stroke-width="2"/>
+                    <path d="M35 40 Q40 50 45 40" stroke="#FFD700" stroke-width="2" fill="none"/>
+                    <circle cx="40" cy="35" r="3" fill="#00FFFF"/>
+                </g>
+                
+                <g id="icon-crown">
+                    <path d="M25 45 L28 35 L35 40 L40 30 L45 40 L52 35 L55 45 Z" 
+                          fill="#FFD700" stroke="#DAA520" stroke-width="2"/>
+                    <circle cx="30" cy="35" r="2" fill="#FF0000"/>
+                    <circle cx="40" cy="30" r="2" fill="#FF0000"/>
+                    <circle cx="50" cy="35" r="2" fill="#FF0000"/>
+                </g>
+                
+                <!-- Potion Icons -->
+                <g id="icon-health-potion">
+                    <path d="M35 25 L35 20 L45 20 L45 25" fill="none" stroke="#8B4513" stroke-width="2"/>
+                    <path d="M30 25 Q30 50 40 55 Q50 50 50 25 Z" fill="#FF0000" opacity="0.8" stroke="#8B0000" stroke-width="2"/>
+                    <ellipse cx="40" cy="35" rx="6" ry="4" fill="#FFB6C1" opacity="0.6"/>
+                </g>
+                
+                <g id="icon-poison-potion">
+                    <path d="M35 25 L35 20 L45 20 L45 25" fill="none" stroke="#8B4513" stroke-width="2"/>
+                    <path d="M30 25 Q30 50 40 55 Q50 50 50 25 Z" fill="#00FF00" opacity="0.6" stroke="#006400" stroke-width="2"/>
+                    <path d="M37 32 L43 32" stroke="#000" stroke-width="2"/>
+                    <circle cx="40" cy="40" r="2" fill="#000"/>
+                </g>
+                
+                <g id="icon-strength-potion">
+                    <path d="M35 25 L35 20 L45 20 L45 25" fill="none" stroke="#8B4513" stroke-width="2"/>
+                    <path d="M30 25 Q30 50 40 55 Q50 50 50 25 Z" fill="#FF4500" opacity="0.8" stroke="#8B0000" stroke-width="2"/>
+                    <path d="M35 35 L40 40 L45 35 M40 30 L40 45" stroke="#FFD700" stroke-width="2" stroke-linecap="round"/>
+                </g>
+                
+                <!-- Currency Icons -->
+                <g id="icon-gold">
+                    <circle cx="40" cy="40" r="12" fill="#FFD700" stroke="#DAA520" stroke-width="2"/>
+                    <text x="40" y="46" text-anchor="middle" font-size="16" font-weight="bold" fill="#8B6914">G</text>
+                </g>
+                
+                <g id="icon-gem">
+                    <path d="M40 25 L48 35 L45 50 L35 50 L32 35 Z" fill="#9370DB" stroke="#4B0082" stroke-width="2"/>
+                    <path d="M40 25 L40 50 M32 35 L48 35" stroke="#E6E6FA" stroke-width="1" opacity="0.7"/>
+                </g>
+                
+                <!-- Skill Category Icons -->
+                <g id="icon-combat">
+                    <circle cx="40" cy="40" r="15" fill="none" stroke="#FF4500" stroke-width="3"/>
+                    <path d="M30 40 L40 30 L50 40" stroke="#FF4500" stroke-width="3" fill="none" stroke-linejoin="round"/>
+                    <circle cx="40" cy="40" r="3" fill="#FF4500"/>
+                </g>
+                
+                <g id="icon-utility">
+                    <circle cx="40" cy="40" r="15" fill="none" stroke="#4169E1" stroke-width="3"/>
+                    <path d="M40 28 L40 52 M28 40 L52 40" stroke="#4169E1" stroke-width="3"/>
+                </g>
+                
+                <g id="icon-economy">
+                    <circle cx="40" cy="40" r="15" fill="none" stroke="#FFD700" stroke-width="3"/>
+                    <path d="M40 30 Q50 35 50 40 Q50 45 40 50 Q30 45 30 40 Q30 35 40 30" fill="#FFD700" opacity="0.3"/>
+                </g>
+                
+                <!-- UI Icons -->
+                <g id="icon-arrow-right">
+                    <path d="M25 40 L55 40 M45 30 L55 40 L45 50" stroke="#D4AF37" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+                
+                <g id="icon-close">
+                    <circle cx="40" cy="40" r="15" fill="#8B0000" opacity="0.8"/>
+                    <path d="M32 32 L48 48 M48 32 L32 48" stroke="#FFF" stroke-width="3" stroke-linecap="round"/>
+                </g>
+                
+                <g id="icon-help">
+                    <circle cx="40" cy="40" r="15" fill="#4169E1" opacity="0.8"/>
+                    <text x="40" y="50" text-anchor="middle" font-size="24" font-weight="bold" fill="#FFF">?</text>
+                </g>
+                
+                <g id="icon-stats">
+                    <rect x="25" y="35" width="8" height="20" fill="#4169E1" opacity="0.8"/>
+                    <rect x="36" y="28" width="8" height="27" fill="#4169E1" opacity="0.8"/>
+                    <rect x="47" y="20" width="8" height="35" fill="#4169E1" opacity="0.8"/>
+                </g>
+            </defs>
+        </svg>
+        
         <!-- Hero SVG Sprites -->
         <div id="hero-sprites" style="display: none;">
             <!-- Knight Sprite -->
@@ -468,36 +594,118 @@
                     <!-- Map Background -->
                     <div class="map-background">
                         <svg class="world-svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet">
-                            <!-- Land masses -->
-                            <path d="M 50 150 Q 300 100 600 120 Q 900 140 950 200 Q 950 400 900 550 Q 850 650 600 680 Q 300 690 150 650 Q 50 550 30 400 Q 20 250 50 150 Z" 
-                                  fill="#8B4513" stroke="#654321" stroke-width="4" opacity="0.9"/>
+                            <defs>
+                                <linearGradient id="landGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#8B6F47;stop-opacity:1" />
+                                    <stop offset="50%" style="stop-color:#9B7653;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#7A5C3E;stop-opacity:1" />
+                                </linearGradient>
+                                <linearGradient id="mountainGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#D3D3D3;stop-opacity:1" />
+                                    <stop offset="40%" style="stop-color:#A9A9A9;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#696969;stop-opacity:1" />
+                                </linearGradient>
+                                <radialGradient id="forestGradient" cx="50%" cy="50%" r="50%">
+                                    <stop offset="0%" style="stop-color:#32CD32;stop-opacity:0.8" />
+                                    <stop offset="100%" style="stop-color:#228B22;stop-opacity:0.9" />
+                                </radialGradient>
+                                <linearGradient id="waterGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#4682B4;stop-opacity:0.8" />
+                                    <stop offset="50%" style="stop-color:#5F9EA0;stop-opacity:0.9" />
+                                    <stop offset="100%" style="stop-color:#4682B4;stop-opacity:0.8" />
+                                </linearGradient>
+                            </defs>
                             
-                            <!-- Mountains -->
-                            <path d="M 200 250 L 250 180 L 300 250 L 350 200 L 400 250" 
-                                  fill="#696969" stroke="#2F4F4F" stroke-width="3"/>
-                            <path d="M 650 220 L 700 150 L 750 220 L 800 170 L 850 220" 
-                                  fill="#696969" stroke="#2F4F4F" stroke-width="3"/>
+                            <!-- Background texture -->
+                            <rect width="1000" height="700" fill="#1a1410"/>
                             
-                            <!-- Rivers -->
-                            <path d="M 150 350 Q 300 330 500 340 Q 700 345 850 360" 
-                                  stroke="#4682B4" stroke-width="6" fill="none"/>
+                            <!-- Main land mass with detailed coastline -->
+                            <path d="M 100 180 
+                                     C 150 140, 250 100, 350 110
+                                     C 450 120, 550 105, 650 115
+                                     C 750 125, 850 135, 920 180
+                                     C 960 210, 970 260, 965 320
+                                     C 960 380, 950 440, 930 500
+                                     C 910 560, 870 620, 800 650
+                                     C 730 680, 640 690, 550 685
+                                     C 460 680, 370 685, 280 675
+                                     C 190 665, 110 640, 70 590
+                                     C 30 540, 20 470, 25 400
+                                     C 30 330, 50 260, 80 210
+                                     C 95 185, 100 180, 100 180 Z" 
+                                  fill="url(#landGradient)" 
+                                  stroke="#654321" 
+                                  stroke-width="3"
+                                  opacity="0.95"/>
                             
-                            <!-- Forests -->
-                            <circle cx="300" cy="500" r="40" fill="#228B22" opacity="0.7"/>
-                            <circle cx="330" cy="470" r="35" fill="#228B22" opacity="0.7"/>
-                            <circle cx="270" cy="470" r="30" fill="#228B22" opacity="0.7"/>
+                            <!-- Mountain ranges with snow caps -->
+                            <g id="northMountains">
+                                <path d="M 180 280 L 220 210 L 260 280 Z" fill="url(#mountainGradient)" stroke="#2F4F4F" stroke-width="2"/>
+                                <path d="M 220 210 L 230 190 L 240 210 Z" fill="#F0F8FF" opacity="0.9"/>
+                                
+                                <path d="M 250 290 L 300 200 L 350 290 Z" fill="url(#mountainGradient)" stroke="#2F4F4F" stroke-width="2"/>
+                                <path d="M 300 200 L 315 175 L 330 200 Z" fill="#F0F8FF" opacity="0.9"/>
+                                
+                                <path d="M 340 285 L 380 230 L 420 285 Z" fill="url(#mountainGradient)" stroke="#2F4F4F" stroke-width="2"/>
+                                <path d="M 380 230 L 392 210 L 404 230 Z" fill="#F0F8FF" opacity="0.9"/>
+                            </g>
                             
-                            <circle cx="750" cy="450" r="45" fill="#228B22" opacity="0.7"/>
-                            <circle cx="780" cy="420" r="38" fill="#228B22" opacity="0.7"/>
-                            <circle cx="720" cy="420" r="32" fill="#228B22" opacity="0.7"/>
+                            <g id="eastMountains">
+                                <path d="M 680 250 L 720 170 L 760 250 Z" fill="url(#mountainGradient)" stroke="#2F4F4F" stroke-width="2"/>
+                                <path d="M 720 170 L 735 145 L 750 170 Z" fill="#F0F8FF" opacity="0.9"/>
+                                
+                                <path d="M 750 260 L 800 190 L 850 260 Z" fill="url(#mountainGradient)" stroke="#2F4F4F" stroke-width="2"/>
+                                <path d="M 800 190 L 818 165 L 836 190 Z" fill="#F0F8FF" opacity="0.9"/>
+                            </g>
+                            
+                            <!-- Winding river -->
+                            <path d="M 120 360 
+                                     Q 200 340 280 345
+                                     Q 360 350 440 355
+                                     Q 520 360 600 350
+                                     Q 680 340 760 350
+                                     Q 840 360 880 370" 
+                                  stroke="url(#waterGradient)" 
+                                  stroke-width="10" 
+                                  fill="none"
+                                  opacity="0.9"
+                                  stroke-linecap="round"/>
+                            
+                            <!-- River tributaries -->
+                            <path d="M 280 345 Q 270 380 260 420" stroke="url(#waterGradient)" stroke-width="5" fill="none" opacity="0.7"/>
+                            <path d="M 600 350 Q 610 310 620 280" stroke="url(#waterGradient)" stroke-width="5" fill="none" opacity="0.7"/>
+                            
+                            <!-- Forests - southwest -->
+                            <g id="southwestForest">
+                                <circle cx="280" cy="520" r="45" fill="url(#forestGradient)"/>
+                                <circle cx="320" cy="500" r="38" fill="url(#forestGradient)"/>
+                                <circle cx="310" cy="550" r="40" fill="url(#forestGradient)"/>
+                                <circle cx="250" cy="500" r="35" fill="url(#forestGradient)"/>
+                                <circle cx="270" cy="540" r="32" fill="url(#forestGradient)"/>
+                            </g>
+                            
+                            <!-- Forests - east -->
+                            <g id="eastForest">
+                                <circle cx="750" cy="470" r="50" fill="url(#forestGradient)"/>
+                                <circle cx="790" cy="450" r="42" fill="url(#forestGradient)"/>
+                                <circle cx="770" cy="510" r="45" fill="url(#forestGradient)"/>
+                                <circle cx="710" cy="460" r="38" fill="url(#forestGradient)"/>
+                                <circle cx="730" cy="500" r="35" fill="url(#forestGradient)"/>
+                            </g>
                             
                             <!-- Paths between locations -->
-                            <path d="M 200 300 L 350 250" stroke="#D2691E" stroke-width="4" stroke-dasharray="8,8" opacity="0.8"/>
-                            <path d="M 350 250 L 550 200" stroke="#D2691E" stroke-width="4" stroke-dasharray="8,8" opacity="0.8"/>
-                            <path d="M 200 300 L 150 450" stroke="#D2691E" stroke-width="4" stroke-dasharray="8,8" opacity="0.8"/>
-                            <path d="M 350 250 L 450 400" stroke="#D2691E" stroke-width="4" stroke-dasharray="8,8" opacity="0.8"/>
-                            <path d="M 550 200 L 750 300" stroke="#D2691E" stroke-width="4" stroke-dasharray="8,8" opacity="0.8"/>
-                            <path d="M 450 400 L 750 300" stroke="#D2691E" stroke-width="4" stroke-dasharray="8,8" opacity="0.8"/>
+                            <path d="M 180 330 C 220 315, 260 300, 300 280" 
+                                  stroke="#8B7355" stroke-width="5" stroke-dasharray="10,8" opacity="0.7" stroke-linecap="round"/>
+                            <path d="M 300 280 C 380 260, 460 240, 550 220" 
+                                  stroke="#8B7355" stroke-width="5" stroke-dasharray="10,8" opacity="0.7" stroke-linecap="round"/>
+                            <path d="M 180 330 C 170 380, 160 430, 155 480" 
+                                  stroke="#8B7355" stroke-width="5" stroke-dasharray="10,8" opacity="0.7" stroke-linecap="round"/>
+                            <path d="M 300 280 C 350 320, 400 360, 450 400" 
+                                  stroke="#8B7355" stroke-width="5" stroke-dasharray="10,8" opacity="0.7" stroke-linecap="round"/>
+                            <path d="M 550 220 C 620 240, 690 260, 750 290" 
+                                  stroke="#8B7355" stroke-width="5" stroke-dasharray="10,8" opacity="0.7" stroke-linecap="round"/>
+                            <path d="M 450 400 C 550 370, 650 340, 750 290" 
+                                  stroke="#8B7355" stroke-width="5" stroke-dasharray="10,8" opacity="0.7" stroke-linecap="round"/>
                         </svg>
                         
                         <!-- Location Markers positioned on the map -->

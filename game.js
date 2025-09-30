@@ -274,6 +274,7 @@ class GameState {
                 {
                     id: 'goblin_king',
                     name: 'Goblin King Raid',
+                    description: 'Defeat the tyrannical Goblin King who terrorizes the forest villages',
                     difficulty: 'easy',
                     boss: { name: 'Goblin King', sprite: 'GOBLIN KING', hp: 500, damage: 25, level: 10 },
                     requirements: { level: 5, gold: 0 },
@@ -284,6 +285,7 @@ class GameState {
                 {
                     id: 'orc_warlord',
                     name: 'Orc Warlord Raid',
+                    description: 'Challenge the mighty Orc Warlord leading raids on merchant caravans',
                     difficulty: 'medium',
                     boss: { name: 'Orc Warlord', sprite: 'ORC LORD', hp: 1000, damage: 40, level: 15 },
                     requirements: { level: 10, gold: 500 },
@@ -294,6 +296,7 @@ class GameState {
                 {
                     id: 'dark_mage',
                     name: 'Dark Mage Raid',
+                    description: 'Stop the Dark Mage from completing his forbidden ritual of destruction',
                     difficulty: 'hard',
                     boss: { name: 'Dark Mage', sprite: 'DARK MAGE', hp: 1500, damage: 60, level: 20 },
                     requirements: { level: 15, gold: 1000 },
@@ -306,6 +309,7 @@ class GameState {
                 {
                     id: 'dragon_prince',
                     name: 'Dragon Prince Raid',
+                    description: 'Face the Dragon Prince who guards an ancient mountain treasure hoard',
                     difficulty: 'epic',
                     boss: { name: 'Dragon Prince', sprite: 'DRAGON PRINCE', hp: 5000, damage: 100, level: 30 },
                     requirements: { level: 25, gold: 2000 },
@@ -316,6 +320,7 @@ class GameState {
                 {
                     id: 'phoenix_king',
                     name: 'Phoenix King Raid',
+                    description: 'Battle the immortal Phoenix King who rises from ashes to burn the land',
                     difficulty: 'epic',
                     boss: { name: 'Phoenix King', sprite: 'PHOENIX KING', hp: 7500, damage: 120, level: 35 },
                     requirements: { level: 30, gold: 3000 },
@@ -328,6 +333,7 @@ class GameState {
                 {
                     id: 'world_destroyer',
                     name: 'World Destroyer Raid',
+                    description: 'Confront the apocalyptic World Destroyer threatening all of existence',
                     difficulty: 'legendary',
                     boss: { name: 'World Destroyer', sprite: 'WORLD DESTROYER', hp: 20000, damage: 200, level: 50 },
                     requirements: { level: 40, gold: 5000, prestige: 1 },
@@ -1107,40 +1113,32 @@ class GameState {
     
     purchaseSkill(skillName) {
         const skill = this.skills[skillName];
-        if (!skill || skill.level >= skill.maxLevel) return false;
+        if (!skill || skill.level >= skill.maxLevel) {
+            console.log('Cannot purchase skill:', skillName, 'Skill:', skill);
+            return false;
+        }
         
-        const baseCosts = {
-            'auto-attack': 100,
-            'crit-chance': 250,
-            'gold-bonus': 500,
-            'health-regen': 300
-        };
+        // Determine cost and currency
+        const currency = skill.currency || 'gold';
+        const cost = Math.floor(skill.cost * Math.pow(1.5, skill.level));
         
-        const cost = baseCosts[skillName] * Math.pow(1.5, skill.level);
+        // Check if player has enough currency
+        const hasEnough = currency === 'gems' ? this.player.gems >= cost : this.player.gold >= cost;
         
-        if (this.player.gold >= cost) {
-            this.player.gold -= cost;
-            skill.level++;
+        if (hasEnough) {
+            // Deduct cost
+            if (currency === 'gems') {
+                this.player.gems -= cost;
+            } else {
+                this.player.gold -= cost;
+                this.stats.goldSpent += cost;
+            }
             
-            // Update stats
-            this.stats.goldSpent += cost;
+            skill.level++;
             this.stats.skillsUpgraded++;
             
-            // Apply skill effects
-            switch (skillName) {
-                case 'auto-attack':
-                    this.player.autoAttack = skill.level > 0;
-                    break;
-                case 'crit-chance':
-                    this.player.critChance = 0.05 + (skill.level * 0.03);
-                    break;
-                case 'gold-bonus':
-                    this.player.goldBonus = 1.0 + (skill.level * 0.1);
-                    break;
-                case 'health-regen':
-                    this.player.healthRegen = skill.level * 2;
-                    break;
-            }
+            // Apply skill effects dynamically
+            this.applySkillEffects();
             
             this.playSound('purchase');
             this.updateSkillDisplay();
@@ -1153,30 +1151,55 @@ class GameState {
         return false;
     }
     
+    // Apply all skill effects
+    applySkillEffects() {
+        // Combat skills
+        this.player.autoAttack = this.skills['auto-attack'].level > 0;
+        this.player.critChance = 0.05 + (this.skills['crit-chance'].level * 0.02);
+        
+        // Economy skills
+        this.player.goldBonus = 1.0 + (this.skills['gold-bonus'].level * 0.1);
+        
+        // Utility skills
+        this.player.healthRegen = this.skills['health-regen'].level * 1;
+        
+        // Apply max HP from vitality
+        const baseMaxHp = 100 + (this.player.level - 1) * 20;
+        const vitalityBonus = this.skills['vitality'].level * 10;
+        this.player.maxHp = baseMaxHp + vitalityBonus;
+    }
+    
     updateSkillDisplay() {
         Object.keys(this.skills).forEach(skillName => {
             const skill = this.skills[skillName];
             const skillNode = document.querySelector(`[data-skill="${skillName}"]`);
+            
+            if (!skillNode) return; // Skip if node doesn't exist in HTML
+            
             const levelNum = skillNode.querySelector('.skill-level-num');
             const costNum = skillNode.querySelector('.skill-cost-num');
             
-            levelNum.textContent = skill.level;
+            if (levelNum) levelNum.textContent = skill.level;
             
-            const baseCosts = {
-                'auto-attack': 100,
-                'crit-chance': 250,
-                'gold-bonus': 500,
-                'health-regen': 300
-            };
-            
-            const cost = baseCosts[skillName] * Math.pow(1.5, skill.level);
-            costNum.textContent = cost.toLocaleString();
-            
-            if (skill.level >= skill.maxLevel) {
-                skillNode.classList.add('purchased');
-                costNum.textContent = 'MAX';
-            } else if (skill.level > 0) {
-                skillNode.classList.add('purchased');
+            if (costNum) {
+                if (skill.level >= skill.maxLevel) {
+                    costNum.textContent = 'MAX';
+                    skillNode.classList.add('purchased');
+                } else {
+                    const cost = Math.floor(skill.cost * Math.pow(1.5, skill.level));
+                    const currency = skill.currency === 'gems' ? ' 💎' : ' GOLD';
+                    costNum.textContent = this.formatNumber(cost);
+                    
+                    // Update cost display text
+                    const costText = skillNode.querySelector('.skill-cost');
+                    if (costText) {
+                        costText.textContent = `Cost: ${this.formatNumber(cost)}${currency}`;
+                    }
+                    
+                    if (skill.level > 0) {
+                        skillNode.classList.add('purchased');
+                    }
+                }
             }
         });
     }
@@ -1248,7 +1271,8 @@ class GameState {
             if (i < this.inventory.length) {
                 const item = this.inventory[i];
                 slot.classList.add('occupied');
-                slot.innerHTML = `<div style="font-size: 1.5em;">${item.emoji || '📦'}</div>`;
+                const iconHTML = item.icon ? getSVGIconHTML(item.icon, 30) : getSVGIconHTML('icon-sword', 30);
+                slot.innerHTML = iconHTML;
                 slot.title = `${item.name}\n${item.description || ''}`;
                 
                 slot.addEventListener('click', () => {
@@ -1619,6 +1643,7 @@ updateQuestTimer() {
                                 <span class="raid-difficulty ${raid.difficulty}">${raid.difficulty.toUpperCase()}</span>
                             </div>
                         </div>
+                        ${raid.description ? `<div class="raid-description">${raid.description}</div>` : ''}
                         <div class="raid-boss">
                             <div class="raid-boss-sprite">${raid.boss.sprite}</div>
                             <div class="raid-boss-info">
@@ -2018,31 +2043,65 @@ updateQuestTimer() {
     }
 }
 
+// Helper function to create SVG icon
+function createSVGIcon(iconId, size = 40) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', size);
+    svg.setAttribute('height', size);
+    svg.setAttribute('viewBox', '0 0 80 80');
+    
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `#${iconId}`);
+    svg.appendChild(use);
+    
+    return svg;
+}
+
+// Helper function to get SVG icon HTML string
+function getSVGIconHTML(iconId, size = 40) {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 80 80"><use xlink:href="#${iconId}"></use></svg>`;
+}
+
 // Shop items data
 const shopItems = {
     weapons: [
-        { name: 'Iron Sword', emoji: '⚔️', damage: 15, cost: 100, type: 'weapon', description: 'A sturdy iron blade' },
-        { name: 'Steel Sword', emoji: '🗡️', damage: 25, cost: 300, type: 'weapon', description: 'Sharp steel weapon' },
-        { name: 'Magic Blade', emoji: '✨', damage: 40, cost: 800, type: 'weapon', description: 'Enchanted with mystical power' },
-        { name: 'Dragon Slayer', emoji: '🐉', damage: 60, cost: 1500, type: 'weapon', description: 'Legendary weapon of power' }
+        { name: 'Rusty Dagger', icon: 'icon-dagger', damage: 8, cost: 50, type: 'weapon', description: 'Better than nothing' },
+        { name: 'Iron Sword', icon: 'icon-sword', damage: 15, cost: 150, type: 'weapon', description: 'A sturdy iron blade' },
+        { name: 'Steel Sword', icon: 'icon-sword', damage: 25, cost: 400, type: 'weapon', description: 'Sharp steel weapon' },
+        { name: 'Silver Blade', icon: 'icon-sword', damage: 35, cost: 800, type: 'weapon', description: 'Blessed silver sword' },
+        { name: 'Magic Blade', icon: 'icon-sword', damage: 50, cost: 1500, type: 'weapon', description: 'Enchanted with mystical power' },
+        { name: 'Flaming Sword', icon: 'icon-sword', damage: 70, cost: 3000, type: 'weapon', description: 'Burns enemies on contact' },
+        { name: 'Dragon Slayer', icon: 'icon-sword', damage: 100, cost: 6000, type: 'weapon', description: 'Legendary weapon of power' },
+        { name: 'Demon Blade', icon: 'icon-sword', damage: 140, cost: 12000, type: 'weapon', description: 'Forged in the depths of hell' },
+        { name: 'Excalibur', icon: 'icon-sword', damage: 200, cost: 25000, type: 'weapon', description: 'The legendary sword of kings' }
     ],
     armor: [
-        { name: 'Leather Armor', emoji: '🛡️', defense: 5, cost: 80, type: 'armor', description: 'Basic protection' },
-        { name: 'Chain Mail', emoji: '🔗', defense: 10, cost: 250, type: 'armor', description: 'Metal chain protection' },
-        { name: 'Plate Armor', emoji: '⚔️', defense: 18, cost: 600, type: 'armor', description: 'Heavy metal plating' },
-        { name: 'Dragon Scale', emoji: '🐲', defense: 30, cost: 1200, type: 'armor', description: 'Armor forged from dragon scales' }
+        { name: 'Cloth Armor', icon: 'icon-armor', defense: 3, cost: 40, type: 'armor', description: 'Basic cloth protection' },
+        { name: 'Leather Armor', icon: 'icon-shield', defense: 8, cost: 120, type: 'armor', description: 'Basic leather protection' },
+        { name: 'Chain Mail', icon: 'icon-armor', defense: 15, cost: 350, type: 'armor', description: 'Metal chain protection' },
+        { name: 'Iron Plate', icon: 'icon-shield', defense: 25, cost: 750, type: 'armor', description: 'Heavy iron plating' },
+        { name: 'Steel Plate', icon: 'icon-armor', defense: 40, cost: 1500, type: 'armor', description: 'Reinforced steel armor' },
+        { name: 'Mithril Mail', icon: 'icon-armor', defense: 60, cost: 3500, type: 'armor', description: 'Lightweight but strong' },
+        { name: 'Dragon Scale', icon: 'icon-shield', defense: 90, cost: 7000, type: 'armor', description: 'Armor forged from dragon scales' },
+        { name: 'Demon Plate', icon: 'icon-armor', defense: 130, cost: 15000, type: 'armor', description: 'Cursed armor of power' },
+        { name: 'Divine Aegis', icon: 'icon-shield', defense: 180, cost: 30000, type: 'armor', description: 'Blessed by the gods' }
     ],
     accessories: [
-        { name: 'Power Ring', emoji: '💍', strength: 5, cost: 200, type: 'accessory', description: 'Increases strength' },
-        { name: 'Defense Amulet', emoji: '🔮', defense: 3, cost: 150, type: 'accessory', description: 'Boosts defense' },
-        { name: 'Gold Ring', emoji: '💰', goldBonus: 0.2, cost: 500, type: 'accessory', description: 'Increases gold gain' },
-        { name: 'Lucky Charm', emoji: '🍀', critChance: 0.1, cost: 800, type: 'accessory', description: 'Increases critical hit chance' }
+        { name: 'Copper Ring', icon: 'icon-ring', strength: 3, cost: 100, type: 'accessory', description: 'Slight strength boost' },
+        { name: 'Power Ring', icon: 'icon-ring', strength: 8, cost: 300, type: 'accessory', description: 'Increases strength' },
+        { name: 'Defense Amulet', icon: 'icon-amulet', defense: 5, cost: 250, type: 'accessory', description: 'Boosts defense' },
+        { name: 'Gold Ring', icon: 'icon-ring', goldBonus: 0.2, cost: 600, type: 'accessory', description: '+20% gold gain' },
+        { name: 'Lucky Charm', icon: 'icon-amulet', critChance: 0.1, cost: 1000, type: 'accessory', description: '+10% crit chance' },
+        { name: 'Ruby Amulet', icon: 'icon-amulet', strength: 15, cost: 2000, type: 'accessory', description: 'Powerful strength boost' },
+        { name: 'Emerald Ring', icon: 'icon-ring', defense: 12, cost: 2000, type: 'accessory', description: 'Strong defense boost' },
+        { name: 'Golden Crown', icon: 'icon-crown', goldBonus: 0.5, cost: 5000, type: 'accessory', description: '+50% gold gain' },
+        { name: 'Phoenix Feather', icon: 'icon-amulet', critChance: 0.25, cost: 8000, type: 'accessory', description: '+25% crit chance' }
     ],
     consumables: [
-        { name: 'Heal Potion', emoji: '🧪', cost: 50, type: 'consumable', consumableType: 'healPotion', description: 'Restores 50% of max HP' },
-        { name: 'Poison Vial', emoji: '☠️', cost: 75, type: 'consumable', consumableType: 'poisonPotion', description: 'Deals 30% of monster max HP' },
-        { name: 'Strength Potion', emoji: '💪', cost: 100, type: 'consumable', consumableType: 'strengthPotion', description: 'Temporarily increases damage' },
-        { name: 'Defense Potion', emoji: '🛡️', cost: 100, type: 'consumable', consumableType: 'defensePotion', description: 'Temporarily increases defense' }
+        { name: 'Minor Heal Potion', icon: 'icon-health-potion', cost: 30, type: 'consumable', consumableType: 'healPotion', description: 'Restores 50% HP' },
+        { name: 'Poison Vial', icon: 'icon-poison-potion', cost: 50, type: 'consumable', consumableType: 'poisonPotion', description: 'Deals 30% monster HP' },
+        { name: 'Strength Potion', icon: 'icon-strength-potion', cost: 80, type: 'consumable', consumableType: 'strengthPotion', description: '+20% damage temporarily' },
+        { name: 'Defense Potion', icon: 'icon-strength-potion', cost: 80, type: 'consumable', consumableType: 'defensePotion', description: '+20% defense temporarily' }
     ]
 };
 
@@ -2108,13 +2167,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (item.goldBonus) statsText += `Gold Bonus: +${(item.goldBonus * 100).toFixed(0)}% `;
                 if (item.critChance) statsText += `Crit Chance: +${(item.critChance * 100).toFixed(0)}% `;
                 
+                const iconHTML = item.icon ? getSVGIconHTML(item.icon, 60) : getSVGIconHTML('icon-sword', 60);
+                
                 itemEl.innerHTML = `
-                    <div style="font-size: 2rem; text-align: center; margin-bottom: 10px;">${item.emoji}</div>
+                    <div style="text-align: center; margin-bottom: 10px;">${iconHTML}</div>
                     <div class="shop-item-name">${item.name}</div>
                     <div class="shop-item-stats">${statsText}</div>
                     <div style="opacity: 0.8; font-size: 0.9em; margin-bottom: 10px;">${item.description}</div>
                     <div class="shop-item-cost">
-                        <span>Cost: ${item.cost.toLocaleString()} 💰</span>
+                        <span style="display: flex; align-items: center; gap: 5px;">Cost: ${item.cost.toLocaleString()} ${getSVGIconHTML('icon-gold', 20)}</span>
                         <button class="buy-btn" ${game.player.gold < item.cost ? 'disabled' : ''}>
                             Buy
                         </button>
@@ -2162,7 +2223,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tutorialBtn) tutorialBtn.addEventListener('click', () => game.startTutorial());
     // Help system
     const helpBtn = document.getElementById('help-btn');
-    const helpClose = document.getElementById('help-close');
+    const helpClose = document.getElementById('close-help');
     
     if (helpBtn) {
         helpBtn.addEventListener('click', () => {

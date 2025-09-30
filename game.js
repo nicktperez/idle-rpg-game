@@ -171,6 +171,8 @@ class GameState {
         this.autoAttackInterval = 1000; // 1 second
         this.lastHealthRegen = 0;
         this.healthRegenInterval = 3000; // 3 seconds
+        this.comboMultiplier = 1;
+        this.monstersDefeatedSession = 0;
         
         // Audio context for sound effects
         this.audioContext = null;
@@ -619,7 +621,29 @@ class GameState {
         
         this.currentMonster.hp = this.currentMonster.maxHp;
         console.log('Monster spawned:', this.currentMonster);
+        
+        // Trigger slide-in animation
+        const monsterChar = document.getElementById('monster-character');
+        if (monsterChar) {
+            monsterChar.classList.remove('defeated');
+            // Force reflow to restart animation
+            void monsterChar.offsetWidth;
+        }
+        
         this.updateMonsterDisplay();
+        this.updateBattleStats();
+    }
+    
+    updateBattleStats() {
+        const monstersCountEl = document.getElementById('battle-monsters-count');
+        const comboEl = document.getElementById('battle-combo');
+        
+        if (monstersCountEl) {
+            monstersCountEl.textContent = this.monstersDefeatedSession;
+        }
+        if (comboEl) {
+            comboEl.textContent = `x${this.comboMultiplier.toFixed(1)}`;
+        }
     }
     
     updateMonsterDisplay() {
@@ -892,11 +916,22 @@ class GameState {
         if (this.domCache.playerHp) this.domCache.playerHp.textContent = Math.floor(this.player.hp);
         if (this.domCache.playerMaxHp) this.domCache.playerMaxHp.textContent = this.player.maxHp;
         
-        // Update HP bar
+        // Update HP bar (header)
         if (this.domCache.hpFill) {
             const hpPercent = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
             this.domCache.hpFill.style.width = hpPercent + '%';
         }
+        
+        // Update hero HP bar in battle window
+        const heroHpFill = document.getElementById('hero-hp-fill');
+        const heroHpCurrent = document.getElementById('hero-hp-current');
+        const heroHpMax = document.getElementById('hero-hp-max');
+        if (heroHpFill) {
+            const hpPercent = Math.max(0, Math.min(100, (this.player.hp / this.player.maxHp) * 100));
+            heroHpFill.style.width = hpPercent + '%';
+        }
+        if (heroHpCurrent) heroHpCurrent.textContent = Math.floor(this.player.hp);
+        if (heroHpMax) heroHpMax.textContent = this.player.maxHp;
         
         // Update EXP bar
         if (this.domCache.expFill) {
@@ -965,9 +1000,11 @@ class GameState {
         const isCrit = Math.random() < this.player.critChance;
         const damage = Math.floor(baseDamage * (isCrit ? 2.5 : 1));
         
-        // Player attack animation
+        // Player attack animation (side-scrolling)
+        const heroCharacter = document.getElementById('hero-character');
         const playerSprite = document.getElementById('player-sprite');
-        playerSprite.classList.add('attacking');
+        if (heroCharacter) heroCharacter.classList.add('attacking');
+        if (playerSprite) playerSprite.classList.add('attacking');
         
         // Show damage after animation
         setTimeout(() => {
@@ -983,7 +1020,8 @@ class GameState {
             
             // Remove animation classes
             setTimeout(() => {
-                playerSprite.classList.remove('attacking');
+                if (heroCharacter) heroCharacter.classList.remove('attacking');
+                if (playerSprite) playerSprite.classList.remove('attacking');
                 monsterSprite.classList.remove('taking-damage');
             }, 300);
             
@@ -1056,18 +1094,28 @@ class GameState {
             return;
         }
         
-        const goldReward = Math.floor(this.currentMonster.gold * this.player.goldBonus * (1 + this.player.prestigeGoldBonus));
+        // Trigger defeat animation
+        const monsterChar = document.getElementById('monster-character');
+        if (monsterChar) {
+            monsterChar.classList.add('defeated');
+        }
+        
+        const goldReward = Math.floor(this.currentMonster.gold * this.player.goldBonus * (1 + this.player.prestigeGoldBonus) * this.comboMultiplier);
         const expReward = Math.floor(this.currentMonster.exp * (1 + this.player.prestigeExpBonus));
         
         this.player.gold += goldReward;
         this.player.exp += expReward;
         
-        // Update stats
+        // Update stats and combo
         this.stats.monstersDefeated++;
+        this.monstersDefeatedSession++;
         this.stats.totalGoldEarned += goldReward;
         
+        // Increase combo (up to 3x)
+        this.comboMultiplier = Math.min(3.0, this.comboMultiplier + 0.1);
+        
         this.addToCombatLog(`You defeated ${this.currentMonster.name}!`);
-        this.addToCombatLog(`Gained ${goldReward} gold and ${expReward} EXP!`);
+        this.addToCombatLog(`Gained ${goldReward} gold and ${expReward} EXP! (${this.comboMultiplier.toFixed(1)}x combo)`);
         
         // Check for level up
         if (this.player.exp >= this.player.expToNext) {
@@ -1080,12 +1128,13 @@ class GameState {
         this.updateAchievementProgress('rich_10000', goldReward);
         this.updateQuestProgress('earn_gold', goldReward);
         
-        // Spawn new monster after delay
+        // Spawn new monster after defeat animation
         setTimeout(() => {
             this.spawnMonster();
-        }, 1500);
+        }, 800);
         
         this.updatePlayerDisplay();
+        this.updateBattleStats();
     }
     
     levelUp() {

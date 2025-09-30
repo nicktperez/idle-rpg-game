@@ -800,89 +800,128 @@
             <section class="location-content" id="battle-area">
                 <h2>Battle Arena</h2>
                 
-                <!-- Clean Battle Layout -->
-                <div class="battle-container">
-                    <!-- Hero Side -->
-                    <div class="battle-side hero-side">
-                        <div class="character-card">
-                            <div class="character-sprite" id="player-sprite">HERO</div>
-                            <div class="character-info">
-                                <h3 id="player-name">Hero</h3>
-                                <div class="character-stats">
-                                    <div class="stat">Damage: <span id="player-damage">10</span></div>
-                                    <div class="stat">Defense: <span id="player-defense">5</span></div>
-                                </div>
+                <!-- Side-Scrolling Battle Window -->
+                <div class="sidescroll-battle-window">
+                    <!-- Background layers for parallax effect -->
+                    <div class="battle-background">
+                        <div class="bg-layer sky"></div>
+                        <div class="bg-layer mountains"></div>
+                        <div class="bg-layer ground"></div>
+                    </div>
+                    
+                    <!-- Battle Ground -->
+                    <div class="battle-ground">
+                        <!-- Hero (Left Side) -->
+                        <div class="hero-character" id="hero-character">
+                            <div class="character-sprite-container" id="player-sprite">
+                                HERO
                             </div>
+                            <div class="character-healthbar hero-hp">
+                                <div class="healthbar-fill" id="hero-hp-fill" style="width: 100%;"></div>
+                                <span class="hp-text-small"><span id="hero-hp-current">100</span>/<span id="hero-hp-max">100</span></span>
+                            </div>
+                            <div class="character-name-tag">Hero</div>
+                        </div>
+                        
+                        <!-- Monster (Right Side) -->
+                        <div class="monster-character" id="monster-character">
+                            <div class="character-sprite-container" id="monster-sprite">
+                                MONSTER
+                            </div>
+                            <div class="character-healthbar monster-hp">
+                                <div class="healthbar-fill" id="monster-hp-fill" style="width: 100%;"></div>
+                                <span class="hp-text-small" id="monster-hp-text">100/100</span>
+                            </div>
+                            <div class="character-name-tag" id="monster-name">Monster</div>
+                        </div>
+                        
+                        <!-- Combat Effects -->
+                        <div id="combat-effects" class="combat-effects"></div>
+                        
+                        <!-- Floating Damage Numbers -->
+                        <div id="floating-damage" class="floating-damage"></div>
+                    </div>
+                    
+                    <!-- Battle Stats Overlay -->
+                    <div class="battle-stats-overlay">
+                        <div class="stat-badge">
+                            <span class="stat-label">Monsters Defeated:</span>
+                            <span class="stat-value" id="battle-monsters-count">0</span>
+                        </div>
+                        <div class="stat-badge">
+                            <span class="stat-label">Combo:</span>
+                            <span class="stat-value" id="battle-combo">x1</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Combat Controls -->
+                <div class="combat-controls">
+                    <div class="control-section">
+                        <h3>Attack</h3>
+                        <div class="attack-buttons">
+                            <button class="combat-btn quick-attack" id="quick-attack-btn" title="70% damage, faster">
+                                <svg width="24" height="24" viewBox="0 0 80 80">
+                                    <path d="M20 40 L60 40 M50 30 L60 40 L50 50" stroke="#90EE90" stroke-width="4" fill="none" stroke-linecap="round"/>
+                                    <circle cx="20" cy="40" r="3" fill="#90EE90"/>
+                                </svg>
+                                <span>Quick</span>
+                            </button>
+                            
+                            <button class="combat-btn normal-attack" id="normal-attack-btn" title="100% damage">
+                                <svg width="24" height="24" viewBox="0 0 80 80"><use xlink:href="#icon-sword"></use></svg>
+                                <span>Attack</span>
+                            </button>
+                            
+                            <button class="combat-btn power-attack" id="power-attack-btn" title="150% damage, slower">
+                                <svg width="24" height="24" viewBox="0 0 80 80">
+                                    <circle cx="40" cy="40" r="15" fill="none" stroke="#FF6347" stroke-width="4"/>
+                                    <path d="M30 40 L50 40 M40 30 L40 50" stroke="#FF6347" stroke-width="4" stroke-linecap="round"/>
+                                </svg>
+                                <span>Power</span>
+                            </button>
                         </div>
                     </div>
                     
-                    <!-- Battle Center -->
-                    <div class="battle-center">
-                        <div class="vs-indicator">VS</div>
-                        
-                        <!-- Attack Types -->
-                        <div class="attack-types">
-                            <button class="attack-btn quick-attack" id="quick-attack-btn">
-                                <div class="attack-icon">⚡</div>
-                                <div class="attack-name">Quick Attack</div>
-                                <div class="attack-desc">Fast, low damage</div>
+                    <div class="control-section">
+                        <h3>Items</h3>
+                        <div class="item-buttons">
+                            <button class="combat-btn item-btn heal-potion" id="heal-potion-btn" title="Restore 50% HP">
+                                <svg width="24" height="24" viewBox="0 0 80 80"><use xlink:href="#icon-health-potion"></use></svg>
+                                <span>Heal</span>
+                                <div class="item-count-badge" id="heal-potion-count">3</div>
                             </button>
                             
-                            <button class="attack-btn normal-attack" id="normal-attack-btn">
-                                <div class="attack-icon">⚔️</div>
-                                <div class="attack-name">Normal Attack</div>
-                                <div class="attack-desc">Standard damage</div>
+                            <button class="combat-btn item-btn poison-potion" id="poison-potion-btn" title="Deal 30% monster HP">
+                                <svg width="24" height="24" viewBox="0 0 80 80"><use xlink:href="#icon-poison-potion"></use></svg>
+                                <span>Poison</span>
+                                <div class="item-count-badge" id="poison-potion-count">2</div>
                             </button>
-                            
-                            <button class="attack-btn power-attack" id="power-attack-btn">
-                                <div class="attack-icon">💥</div>
-                                <div class="attack-name">Power Attack</div>
-                                <div class="attack-desc">Slow, high damage</div>
-                            </button>
-                        </div>
-                        
-                        <!-- Consumable Items -->
-                        <div class="consumables">
-                            <button class="item-btn heal-potion" id="heal-potion-btn">
-                                <div class="item-icon">🧪</div>
-                                <div class="item-name">Heal Potion</div>
-                                <div class="item-count" id="heal-potion-count">3</div>
-                            </button>
-                            
-                            <button class="item-btn poison-potion" id="poison-potion-btn">
-                                <div class="item-icon">☠️</div>
-                                <div class="item-name">Poison</div>
-                                <div class="item-count" id="poison-potion-count">2</div>
-                            </button>
-                        </div>
-                        
-                        <div class="combat-log" id="combat-log">
-                            <p>Choose an attack or use an item!</p>
                         </div>
                     </div>
                     
-                    <!-- Monster Side -->
-                    <div class="battle-side monster-side">
-                        <div class="character-card">
-                            <div class="character-sprite" id="monster-sprite">MONSTER</div>
-                            <div class="character-info">
-                                <h3 id="monster-name">Monster</h3>
-                                <div class="hp-display">
-                                    <div class="hp-bar">
-                                        <div class="hp-fill" id="monster-hp-fill"></div>
-                                    </div>
-                                    <span class="hp-text" id="monster-hp-text">100/100</span>
-                                </div>
+                    <div class="control-section">
+                        <h3>Stats</h3>
+                        <div class="hero-stats-display">
+                            <div class="stat-item">
+                                <svg width="20" height="20" viewBox="0 0 80 80"><use xlink:href="#icon-sword"></use></svg>
+                                <span>DMG: <strong id="player-damage">10</strong></span>
+                            </div>
+                            <div class="stat-item">
+                                <svg width="20" height="20" viewBox="0 0 80 80"><use xlink:href="#icon-shield"></use></svg>
+                                <span>DEF: <strong id="player-defense">5</strong></span>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Combat Effects Container -->
-                <div id="combat-effects" class="combat-effects"></div>
-                
-                <!-- Floating Damage Numbers -->
-                <div id="floating-damage" class="floating-damage"></div>
+                <!-- Combat Log -->
+                <div class="combat-log-container">
+                    <h3>Combat Log</h3>
+                    <div class="combat-log" id="combat-log">
+                        <p>Click to attack the monster!</p>
+                    </div>
+                </div>
                 
                 <div class="location-navigation">
                     <button class="nav-btn" data-action="back-to-map">← Back to Map</button>
